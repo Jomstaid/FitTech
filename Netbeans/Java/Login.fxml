@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<VBox alignment="CENTER" spacing="0" prefWidth="250" maxWidth="250" style="-fx-background-color: #0f0f0f;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="fittechfrontdesk.controller.LoginController">
+    <!-- Header Banner -->
+    <VBox alignment="CENTER" style="-fx-background-color: #00e5ff; -fx-padding: 30 0 30 0;">
+        <Label style="-fx-font-size: 36; -fx-font-weight: bold; -fx-text-fill: #0f0f0f;" text="FITTECH" />
+        <Label style="-fx-font-size: 14; -fx-text-fill: #0f0f0f; -fx-letter-spacing: 4;" text="FRONT DESK" />
+    </VBox>
+    <!-- Login Card -->
+    <VBox alignment="CENTER" spacing="14" style="-fx-background-color: #1a1a1a; -fx-padding: 40 60 40 60; -fx-background-radius: 0;">
+        <Label style="-fx-font-size: 18; -fx-text-fill: #ffffff; -fx-font-weight: bold;" text="Admin Login" />
+        <Label style="-fx-font-size: 12; -fx-text-fill: #888888;" text="Only admin accounts can access the front desk." />
+        <VBox spacing="6" style="-fx-padding: 10 0 0 0;">
+            <Label style="-fx-text-fill: #aaaaaa; -fx-font-size: 12;" text="Username" />
+            <TextField fx:id="usernameField" promptText="Enter admin username" style="-fx-background-color: #2a2a2a; -fx-text-fill: white; -fx-prompt-text-fill: #555555; -fx-border-color: #333333; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 10; -fx-font-size: 14;" />
+        </VBox>
+        <VBox spacing="6">
+            <Label style="-fx-text-fill: #aaaaaa; -fx-font-size: 12;" text="Password" />
+            <PasswordField fx:id="passwordField" promptText="Enter password" style="-fx-background-color: #2a2a2a; -fx-text-fill: white; -fx-prompt-text-fill: #555555; -fx-border-color: #333333; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 10; -fx-font-size: 14;" />
+        </VBox>
+        <Label fx:id="errorLabel" maxWidth="300" style="-fx-text-fill: #ff5555; -fx-font-size: 12;" text="" wrapText="true" />
+        <Button fx:id="loginButton" maxWidth="Infinity" onAction="#handleLogin" prefHeight="42" style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f; -fx-font-weight: bold; -fx-font-size: 14; -fx-background-radius: 4; -fx-cursor: hand;" text="LOGIN" />
+    </VBox>
+    <VBox.margin>
+        <Insets />
+    </VBox.margin>
+</VBox>

@@ -1,0 +1,1882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Remove this tag once you rename files -->
+
+<title>FitTech — Gym Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+:root {
+  --bg:       #060a0f;
+  --surface:  #0d1520;
+  --surface2: #121d2e;
+  --border:   rgba(255,255,255,0.06);
+  --accent:   #00e5ff;
+  --accent2:  #ff3d6b;
+  --accent3:  #7cff6b;
+  --gold:     #ffd700;
+  --purple:   #b57bff;
+  --text:     #e8edf5;
+  --muted:    #4a5c78;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── GRID OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NOISE TEXTURE ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+section, nav, footer { position: relative; z-index: 1; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+@keyframes float {
+  0%,100% { transform:translateY(0px); }
+  50%      { transform:translateY(-12px); }
+}
+@keyframes pulse-glow {
+  0%,100% { box-shadow:0 0 30px rgba(0,229,255,0.15); }
+  50%      { box-shadow:0 0 60px rgba(0,229,255,0.35); }
+}
+@keyframes scan {
+  from { transform:translateY(-100%); }
+  to   { transform:translateY(100vh); }
+}
+@keyframes spin-slow {
+  to { transform:rotate(360deg); }
+}
+@keyframes marquee {
+  from { transform:translateX(0); }
+  to   { transform:translateX(-50%); }
+}
+@keyframes blink {
+  0%,100% { opacity:1; }
+  50%      { opacity:0; }
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 0 2.5rem;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(6,10,15,0.8);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  animation: fadeIn 0.6s var(--ease-out) both;
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--accent), #0080ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2.5rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .88rem;
+  font-weight: 500;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  background: var(--accent) !important;
+  color: var(--bg) !important;
+  padding: 10px 22px !important;
+  border-radius: 10px !important;
+  font-family: 'Bebas Neue', sans-serif !important;
+  font-size: 1rem !important;
+  letter-spacing: 2px !important;
+  transition: all 0.2s var(--ease-out) !important;
+}
+.nav-cta:hover {
+  background: #33eaff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(0,229,255,0.4) !important;
+}
+
+/* ── HAMBURGER BUTTON (mobile only) ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.nav-hamburger span {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 0.3s var(--ease-out);
+  transform-origin: center;
+}
+
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── MOBILE DRAWER ── */
+.mobile-menu {
+  display: none;
+  position: fixed;
+  top: 70px; left: 0; right: 0;
+  background: rgba(6,10,15,0.97);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border);
+  z-index: 99;
+  padding: 1.5rem 1.5rem 2rem;
+  flex-direction: column;
+  gap: 0;
+  animation: fadeIn 0.2s ease both;
+}
+
+.mobile-menu.open { display: flex; }
+
+.mobile-menu a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-menu a:last-child { border-bottom: none; margin-top: 1rem; justify-content: center; }
+.mobile-menu a:hover { color: var(--text); }
+
+.mobile-menu .mob-cta {
+  background: var(--accent);
+  color: var(--bg) !important;
+  padding: 14px;
+  border-radius: 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  justify-content: center;
+  border-bottom: none !important;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 2rem 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Radial glow background */
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(0,229,255,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(0,229,255,0.08);
+  border: 1px solid rgba(0,229,255,0.2);
+  border-radius: 100px;
+  font-size: .78rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 2rem;
+  animation: fadeUp 0.7s var(--ease-out) 0.1s both;
+}
+
+.hero-eyebrow .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: blink 1.4s ease infinite;
+  flex-shrink: 0;
+}
+
+h1.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 12vw, 10rem);
+  line-height: 0.9;
+  letter-spacing: 2px;
+  animation: fadeUp 0.7s var(--ease-out) 0.2s both;
+  position: relative;
+}
+
+.hero-title .line1 {
+  display: block;
+  background: linear-gradient(135deg, #fff 30%, rgba(255,255,255,0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-title .line2 {
+  display: block;
+  background: linear-gradient(135deg, var(--accent), #0080ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--muted);
+  max-width: 540px;
+  line-height: 1.7;
+  margin: 1.8rem auto 2.8rem;
+  font-weight: 300;
+  animation: fadeUp 0.7s var(--ease-out) 0.3s both;
+}
+
+.hero-sub strong { color: var(--text); font-weight: 500; }
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.7s var(--ease-out) 0.4s both;
+}
+
+.btn-hero-primary {
+  padding: 16px 36px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 12px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s var(--ease-out);
+  animation: pulse-glow 3s ease infinite;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-hero-primary:hover {
+  background: #33eaff;
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,229,255,0.4);
+}
+
+.btn-hero-primary:active { transform: scale(0.97); }
+
+.btn-hero-ghost {
+  padding: 16px 32px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .95rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-hero-ghost:hover {
+  border-color: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-2px);
+}
+
+/* Hero screen mockup */
+.hero-mockup {
+  margin-top: 5rem;
+  position: relative;
+  animation: fadeUp 0.9s var(--ease-out) 0.5s both;
+  width: 100%;
+  max-width: 960px;
+}
+
+.mockup-window {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.03),
+    0 60px 120px rgba(0,0,0,0.7),
+    0 0 100px rgba(0,229,255,0.06);
+  animation: float 6s ease-in-out infinite;
+}
+
+.mockup-bar {
+  height: 44px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 1.2rem;
+  gap: 8px;
+}
+
+.mockup-dot {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+}
+.mockup-dot.r { background: #ff5f57; }
+.mockup-dot.y { background: #febc2e; }
+.mockup-dot.g { background: #28c840; }
+
+.mockup-url {
+  flex: 1;
+  margin: 0 1rem;
+  height: 26px;
+  background: var(--bg);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 6px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+}
+.mockup-url i { color: var(--accent3); font-size: .65rem; }
+
+.mockup-body {
+  display: flex;
+  height: 400px;
+  overflow: hidden;
+}
+
+.mockup-sidebar {
+  width: 180px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 1.2rem .8rem;
+  flex-shrink: 0;
+}
+
+.mock-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, var(--accent), #0080ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+  padding-left: 4px;
+}
+
+.mock-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: .75rem;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+
+.mock-nav-item.active {
+  color: var(--accent);
+  background: rgba(0,229,255,0.07);
+  border: 1px solid rgba(0,229,255,0.12);
+}
+
+.mock-nav-item i { width: 14px; text-align:center; font-size: .72rem; }
+
+.mock-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 1rem 0 .6rem;
+}
+
+.mock-label {
+  font-size: .6rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 0 8px;
+  margin-bottom: .4rem;
+}
+
+.mockup-main {
+  flex: 1;
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.mock-heading {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.mock-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: .6rem;
+  margin-bottom: 1rem;
+}
+
+.mock-stat {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .7rem;
+  position: relative;
+  overflow: hidden;
+}
+.mock-stat::after {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:2px;
+}
+.mock-stat.c1::after { background:linear-gradient(90deg,var(--accent),transparent); }
+.mock-stat.c2::after { background:linear-gradient(90deg,var(--accent2),transparent); }
+.mock-stat.c3::after { background:linear-gradient(90deg,var(--accent3),transparent); }
+.mock-stat.c4::after { background:linear-gradient(90deg,var(--gold),transparent); }
+
+.mock-stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+.mock-stat-lbl {
+  font-size: .58rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.mock-chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .6rem;
+}
+
+.mock-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: .8rem;
+}
+
+.mock-box-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .85rem;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: .6rem;
+}
+
+.mock-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.mock-bar-label { font-size: .6rem; color: var(--muted); width: 40px; flex-shrink:0; }
+
+.mock-bar-wrap {
+  flex:1;
+  height: 5px;
+  background: var(--bg);
+  border-radius: 4px;
+  overflow:hidden;
+}
+
+.mock-bar-fill {
+  height:100%;
+  border-radius:4px;
+}
+
+.mock-badge {
+  display:inline-block;
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:.58rem;
+  font-weight:600;
+}
+.mock-badge.active { background:rgba(124,255,107,.15); color:var(--accent3); }
+.mock-badge.premium { background:rgba(0,229,255,.15); color:var(--accent); }
+.mock-badge.vip     { background:rgba(255,215,0,.15);  color:var(--gold); }
+
+.mock-member-row {
+  display:flex; align-items:center; gap:6px;
+  padding:4px 0; border-bottom:1px solid var(--border);
+  font-size:.6rem; color:var(--muted);
+}
+.mock-avatar {
+  width:18px; height:18px; border-radius:50%;
+  background:linear-gradient(135deg,var(--accent),#0080ff);
+  flex-shrink:0;
+}
+
+/* Scan line effect */
+.mockup-window::after {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:120px;
+  background:linear-gradient(transparent, rgba(0,229,255,0.02), transparent);
+  animation: scan 4s ease-in-out infinite;
+  pointer-events:none;
+}
+
+/* ── MARQUEE / TICKER ── */
+.ticker {
+  overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  padding: .8rem 0;
+  position: relative;
+}
+
+.ticker::before, .ticker::after {
+  content:'';
+  position:absolute;
+  top:0; bottom:0;
+  width:120px;
+  z-index:2;
+  pointer-events:none;
+}
+.ticker::before { left:0; background:linear-gradient(90deg, var(--surface), transparent); }
+.ticker::after  { right:0; background:linear-gradient(-90deg, var(--surface), transparent); }
+
+.ticker-track {
+  display: flex;
+  gap: 0;
+  animation: marquee 30s linear infinite;
+  white-space: nowrap;
+  width: max-content;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 2.5rem;
+  font-size: .78rem;
+  color: var(--muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.ticker-item i {
+  color: var(--accent);
+  font-size: .7rem;
+}
+
+.ticker-item .sep {
+  width: 4px; height: 4px;
+  border-radius: 50%;
+  background: var(--border);
+  margin: 0 0.5rem;
+}
+
+/* ── SECTION COMMON ── */
+.section {
+  padding: 100px 2rem;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-eyebrow {
+  font-size: .75rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: .8rem;
+  font-weight: 600;
+}
+
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  line-height: 1;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+}
+
+.section-desc {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.7;
+  font-weight: 300;
+  max-width: 520px;
+}
+
+/* ── FEATURES GRID ── */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-top: 4rem;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s var(--ease-out), border-color 0.25s ease, box-shadow 0.25s ease;
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+.feature-card.visible {
+  animation: fadeUp 0.6s var(--ease-out) both;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .feature-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(0,229,255,0.2);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 40px rgba(0,229,255,0.05);
+  }
+}
+
+.feature-card::before {
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:3px;
+  opacity:0;
+  transition:opacity 0.25s ease;
+}
+
+.feature-card:hover::before { opacity:1; }
+
+.fc-blue::before   { background:linear-gradient(90deg,var(--accent),transparent); }
+.fc-red::before    { background:linear-gradient(90deg,var(--accent2),transparent); }
+.fc-green::before  { background:linear-gradient(90deg,var(--accent3),transparent); }
+.fc-gold::before   { background:linear-gradient(90deg,var(--gold),transparent); }
+.fc-purple::before { background:linear-gradient(90deg,var(--purple),transparent); }
+.fc-teal::before   { background:linear-gradient(90deg,#00ffc8,transparent); }
+
+.feature-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 1.4rem;
+}
+
+.fc-blue   .feature-icon { background:rgba(0,229,255,.1);   color:var(--accent); }
+.fc-red    .feature-icon { background:rgba(255,61,107,.1);  color:var(--accent2); }
+.fc-green  .feature-icon { background:rgba(124,255,107,.1); color:var(--accent3); }
+.fc-gold   .feature-icon { background:rgba(255,215,0,.1);   color:var(--gold); }
+.fc-purple .feature-icon { background:rgba(181,123,255,.1); color:var(--purple); }
+.fc-teal   .feature-icon { background:rgba(0,255,200,.1);   color:#00ffc8; }
+
+.feature-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+  margin-bottom: .6rem;
+}
+
+.feature-card p {
+  font-size: .88rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.feature-tag {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.fc-blue   .feature-tag { background:rgba(0,229,255,.08);   color:var(--accent);  border:1px solid rgba(0,229,255,.2); }
+.fc-red    .feature-tag { background:rgba(255,61,107,.08);  color:var(--accent2); border:1px solid rgba(255,61,107,.2); }
+.fc-green  .feature-tag { background:rgba(124,255,107,.08); color:var(--accent3); border:1px solid rgba(124,255,107,.2); }
+.fc-gold   .feature-tag { background:rgba(255,215,0,.08);   color:var(--gold);    border:1px solid rgba(255,215,0,.2); }
+.fc-purple .feature-tag { background:rgba(181,123,255,.08); color:var(--purple);  border:1px solid rgba(181,123,255,.2); }
+.fc-teal   .feature-tag { background:rgba(0,255,200,.08);   color:#00ffc8;        border:1px solid rgba(0,255,200,.2); }
+
+/* ── ROLES SECTION ── */
+.roles-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 4rem;
+}
+
+.role-card {
+  background: var(--surface);
+  padding: 2.5rem 2rem;
+  text-align: center;
+  transition: background 0.2s ease;
+  opacity:0; transform:translateY(20px);
+}
+.role-card.visible {
+  animation: fadeUp 0.55s var(--ease-out) both;
+  opacity:1; transform:translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .role-card:hover { background: var(--surface2); }
+}
+
+.role-emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.role-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  margin-bottom: .6rem;
+}
+
+.role-card p {
+  font-size: .82rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.role-perks {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: left;
+}
+
+.role-perk {
+  font-size: .75rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.role-perk::before {
+  content:'';
+  width:5px; height:5px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+.role-member .role-perk::before   { background:var(--accent3); }
+.role-trainer .role-perk::before  { background:var(--accent); }
+.role-desk .role-perk::before     { background:var(--accent2); }
+.role-admin .role-perk::before    { background:var(--gold); }
+
+/* ── MEMBERSHIP TIERS ── */
+.tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.2rem;
+  margin-top: 4rem;
+}
+
+.tier-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s var(--ease-out), border-color 0.25s ease;
+  opacity:0; transform:translateY(24px);
+}
+.tier-card.visible {
+  animation: fadeUp 0.6s var(--ease-out) both;
+  opacity:1; transform:translateY(0);
+}
+
+.tier-card.featured {
+  border-color: rgba(0,229,255,0.3);
+  background: linear-gradient(160deg, rgba(0,229,255,0.04) 0%, var(--surface) 60%);
+}
+
+.tier-card.featured::before {
+  content: 'MOST POPULAR';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .8rem;
+  letter-spacing: 2px;
+  padding: 4px 20px;
+  border-radius: 0 0 12px 12px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tier-card:hover { transform: translateY(-4px); }
+}
+
+.tier-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 2px;
+  margin-bottom: .3rem;
+}
+
+.tier-price {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  letter-spacing: 1px;
+  margin: 1rem 0 .3rem;
+}
+
+.tier-price span {
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+
+.tier-duration {
+  font-size: .78rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.tier-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+}
+
+.tier-features li {
+  font-size: .88rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+}
+
+.tier-features li i {
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tier-basic   .tier-price, .tier-basic   .tier-name { color:var(--accent3); }
+.tier-basic   .tier-features li i { color:var(--accent3); }
+
+.tier-premium .tier-price, .tier-premium .tier-name { color:var(--accent); }
+.tier-premium .tier-features li i { color:var(--accent); }
+
+.tier-vip     .tier-price, .tier-vip     .tier-name { color:var(--gold); }
+.tier-vip     .tier-features li i { color:var(--gold); }
+
+/* ── STATS SHOWCASE ── */
+.stats-showcase {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 4rem;
+  opacity:0; transform:translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s var(--ease-out);
+}
+.stats-showcase.visible { opacity:1; transform:translateY(0); }
+
+.showcase-stat {
+  background: var(--surface);
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.showcase-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 3.5rem;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+.showcase-lbl {
+  font-size: .82rem;
+  color: var(--muted);
+  margin-top: .4rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ── TECH STACK ── */
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  margin-top: 3rem;
+}
+
+.tech-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  transition: all 0.2s var(--ease-out);
+  opacity:0; transform:translateY(16px);
+}
+
+.tech-item.visible {
+  animation: fadeUp 0.5s var(--ease-out) both;
+  opacity:1; transform:translateY(0);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tech-item:hover {
+    border-color: rgba(0,229,255,0.2);
+    transform: translateY(-3px);
+  }
+}
+
+.tech-icon {
+  font-size: 2rem;
+  margin-bottom: .6rem;
+  display: block;
+}
+
+.tech-name {
+  font-size: .8rem;
+  font-weight: 600;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.tech-role {
+  font-size: .7rem;
+  color: var(--muted);
+}
+
+/* ── CTA SECTION ── */
+.cta-section {
+  text-align: center;
+  padding: 120px 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content:'';
+  position:absolute;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  width:800px; height:500px;
+  background:radial-gradient(ellipse, rgba(0,229,255,0.08) 0%, transparent 65%);
+  pointer-events:none;
+}
+
+.cta-section .section-title { margin-bottom: 1.2rem; }
+
+.cta-section .section-desc {
+  margin: 0 auto 2.5rem;
+  text-align: center;
+}
+
+.cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── FOOTER ── */
+footer {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 3rem 2rem;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.footer-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 3px;
+  background: linear-gradient(135deg, var(--accent), #0080ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .82rem;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover { color: var(--text); }
+
+.footer-copy {
+  font-size: .78rem;
+  color: var(--muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── SCROLL ANIMATION HELPER ── */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s var(--ease-out), transform 0.6s var(--ease-out);
+}
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── GLOWING PILL CHIP ── */
+.chip {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:4px 12px;
+  border-radius:100px;
+  font-size:.72rem;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  border:1px solid;
+}
+.chip-cyan   { background:rgba(0,229,255,.08);  border-color:rgba(0,229,255,.2);  color:var(--accent); }
+.chip-green  { background:rgba(124,255,107,.08);border-color:rgba(124,255,107,.2);color:var(--accent3); }
+.chip-red    { background:rgba(255,61,107,.08); border-color:rgba(255,61,107,.2); color:var(--accent2); }
+.chip-gold   { background:rgba(255,215,0,.08);  border-color:rgba(255,215,0,.2);  color:var(--gold); }
+
+/* Decorative circle rings */
+.deco-ring {
+  position:absolute;
+  border-radius:50%;
+  border:1px solid var(--border);
+  pointer-events:none;
+}
+
+/* ═══════════════════════════
+   RESPONSIVE — TABLET (≤900px)
+   mirrors index approach
+═══════════════════════════ */
+@media (max-width: 900px) {
+  .features-grid { grid-template-columns:1fr 1fr; }
+  .roles-grid    { grid-template-columns:1fr 1fr; }
+  .tiers-grid    { grid-template-columns:1fr; }
+  .stats-showcase{ grid-template-columns:1fr 1fr; }
+  .tech-grid     { grid-template-columns:repeat(3,1fr); }
+
+  /* Hide desktop nav links, show hamburger */
+  .nav-links     { display:none; }
+  .nav-hamburger { display:flex; }
+
+  nav { padding: 0 1.5rem; height: 60px; }
+
+  .mockup-body   { height:280px; }
+  .mock-stats    { grid-template-columns:1fr 1fr; }
+
+  .section { padding: 80px 1.5rem; }
+
+  .footer-inner { justify-content: center; text-align: center; }
+  .footer-links { justify-content: center; gap: 1.2rem; }
+}
+
+/* ═══════════════════════════
+   RESPONSIVE — MOBILE (≤600px)
+═══════════════════════════ */
+@media (max-width: 600px) {
+  .features-grid  { grid-template-columns:1fr; }
+  .roles-grid     { grid-template-columns:1fr; }
+  .stats-showcase { grid-template-columns:1fr 1fr; }
+  .tech-grid      { grid-template-columns:1fr 1fr; }
+
+  /* Hide mockup main on small phones, sidebar scrolls */
+  .mockup-main    { display:none; }
+  .mockup-body    { height:auto; }
+
+  .section { padding: 64px 1.25rem; }
+
+  /* Mobile nav */
+  nav { padding: 0 1.25rem; height: 56px; }
+  .mobile-menu { top: 56px; }
+  .nav-logo { font-size: 1.6rem; letter-spacing: 3px; }
+
+  /* Hero tighter */
+  .hero { padding: 100px 1.25rem 60px; }
+  .hero-sub { font-size: 1rem; margin: 1.4rem auto 2.2rem; }
+
+  /* Hero action buttons stack */
+  .hero-actions {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 340px;
+  }
+  .btn-hero-primary,
+  .btn-hero-ghost { justify-content: center; padding: 15px 24px; }
+
+  /* Mockup compact */
+  .hero-mockup { margin-top: 3rem; }
+  .mockup-bar { height: 36px; padding: 0 .8rem; }
+  .mockup-dot { width: 9px; height: 9px; }
+  .mockup-url { font-size: .65rem; }
+
+  /* Section titles */
+  .section-title { font-size: clamp(2rem, 8vw, 2.8rem); }
+  .section-desc  { font-size: .92rem; }
+
+  /* Features cards compact */
+  .feature-card { padding: 1.5rem; border-radius: 16px; }
+  .feature-icon { width: 44px; height: 44px; font-size: 1.1rem; margin-bottom: 1rem; }
+
+  /* Roles single-col — remove gap grid look */
+  .roles-grid { border-radius: 16px; }
+  .role-card { padding: 1.8rem 1.5rem; }
+
+  /* Tier cards */
+  .tier-card { padding: 1.5rem; }
+  .tier-price { font-size: 2.8rem; }
+
+  /* Stats showcase 2-col */
+  .showcase-stat { padding: 1.5rem 1rem; }
+  .showcase-num  { font-size: 2.8rem; }
+
+  /* Tech grid compact */
+  .tech-item { padding: 1.2rem .8rem; }
+  .tech-icon { font-size: 1.6rem; }
+
+  /* CTA section */
+  .cta-section { padding: 80px 1.25rem; }
+  .cta-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  .cta-actions a { width: 100%; max-width: 320px; justify-content: center; }
+
+  /* Chips wrap nicely */
+  .chip { font-size: .65rem; padding: 4px 10px; }
+
+  /* Footer */
+  footer { padding: 2rem 1.25rem; }
+  .footer-links { gap: 1rem; }
+  .footer-copy  { font-size: .7rem; }
+}
+
+/* ═══════════════════════════
+   RESPONSIVE — SMALL (≤400px)
+═══════════════════════════ */
+@media (max-width: 400px) {
+  nav { height: 52px; padding: 0 1rem; }
+  .mobile-menu { top: 52px; }
+  .nav-logo { font-size: 1.4rem; }
+
+  .stats-showcase { grid-template-columns: 1fr; }
+  .tech-grid      { grid-template-columns: repeat(2, 1fr); }
+
+  .hero { padding-top: 90px; }
+  .hero-eyebrow { font-size: .68rem; }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+<a href="https://fittech.space" style="text-decoration:none;">
+  <span class="nav-logo">FitTech</span>
+ <a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#roles">For Who</a></li>
+    <li><a href="#membership">Pricing</a></li>
+    <li><a href="#tech">Technology</a></li>
+    <li><a href="login" class="nav-cta">Launch App</a></li>
+  </ul>
+  <!-- Hamburger for mobile -->
+  <button class="nav-hamburger" id="hamburger" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="#features" class="mob-link">Features <i class="fa fa-chevron-right" style="font-size:.7rem;color:var(--muted)"></i></a>
+  <a href="#roles" class="mob-link">For Who <i class="fa fa-chevron-right" style="font-size:.7rem;color:var(--muted)"></i></a>
+  <a href="#membership" class="mob-link">Pricing <i class="fa fa-chevron-right" style="font-size:.7rem;color:var(--muted)"></i></a>
+  <a href="#tech" class="mob-link">Technology <i class="fa fa-chevron-right" style="font-size:.7rem;color:var(--muted)"></i></a>
+  <a href="login" class="mob-cta"><i class="fa fa-bolt"></i> Launch App</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- decorative rings -->
+  <div class="deco-ring" style="width:500px;height:500px;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.2);opacity:.3"></div>
+  <div class="deco-ring" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.2);opacity:.15"></div>
+
+  <div class="hero-eyebrow">
+    <span class="dot"></span>
+    Full-Stack Gym Management System
+  </div>
+
+  <h1 class="hero-title">
+    <span class="line1">Manage</span>
+    <span class="line2">Everything</span>
+  </h1>
+
+  <p class="hero-sub">
+    FitTech is a <strong>complete web-based gym management platform</strong> built for modern fitness centers. 
+    From member check-ins to trainer scheduling, shop sales to revenue analytics — all in one sleek interface.
+  </p>
+
+  <div class="hero-actions">
+    <a href="login" class="btn-hero-primary">
+      <i class="fa fa-bolt"></i> Launch FitTech
+    </a>
+    <a href="#features" class="btn-hero-ghost">
+      <i class="fa fa-play-circle"></i> Explore Features
+    </a>
+  </div>
+
+  <!-- Mockup window -->
+  <div class="hero-mockup">
+    <div class="mockup-window">
+      <div class="mockup-bar">
+        <div class="mockup-dot r"></div>
+        <div class="mockup-dot y"></div>
+        <div class="mockup-dot g"></div>
+        <div class="mockup-url">
+          <i class="fa fa-lock"></i>
+          https://fittech.space/
+        </div>
+      </div>
+      <div class="mockup-body">
+        <div class="mockup-sidebar">
+          <div class="mock-logo">FitTech</div>
+          <div class="mock-nav-item"><i class="fa fa-home"></i> Dashboard</div>
+          <div class="mock-nav-item"><i class="fa fa-dumbbell"></i> Workouts</div>
+          <div class="mock-nav-item"><i class="fa fa-calendar-alt"></i> Schedule</div>
+          <div class="mock-nav-item"><i class="fa fa-store"></i> Shop</div>
+          <div class="mock-nav-item"><i class="fa fa-user"></i> Profile</div>
+          <div class="mock-divider"></div>
+          <div class="mock-label">Admin</div>
+          <div class="mock-nav-item"><i class="fa fa-door-open"></i> Front Desk</div>
+          <div class="mock-nav-item"><i class="fa fa-users"></i> Members</div>
+          <div class="mock-nav-item active"><i class="fa fa-chart-bar"></i> Analytics</div>
+          <div class="mock-nav-item"><i class="fa fa-tools"></i> Equipment</div>
+        </div>
+        <div class="mockup-main">
+          <div class="mock-heading">Analytics</div>
+          <div class="mock-stats">
+            <div class="mock-stat c1">
+              <div class="mock-stat-val" style="color:var(--accent)">47</div>
+              <div class="mock-stat-lbl">Check-ins Today</div>
+            </div>
+            <div class="mock-stat c3">
+              <div class="mock-stat-val" style="color:var(--accent3)">₱82,500</div>
+              <div class="mock-stat-lbl">Total Revenue</div>
+            </div>
+            <div class="mock-stat c2">
+              <div class="mock-stat-val" style="color:var(--accent2)">12</div>
+              <div class="mock-stat-lbl">Walk-ins Today</div>
+            </div>
+            <div class="mock-stat c4">
+              <div class="mock-stat-val" style="color:var(--gold)">134</div>
+              <div class="mock-stat-lbl">Total Members</div>
+            </div>
+          </div>
+          <div class="mock-chart-row">
+            <div class="mock-box">
+              <div class="mock-box-title">Membership Breakdown</div>
+              <div class="mock-bar-row">
+                <span class="mock-bar-label">Basic</span>
+                <div class="mock-bar-wrap"><div class="mock-bar-fill" style="width:65%;background:var(--accent3)"></div></div>
+                <span style="font-size:.6rem;color:var(--muted);width:20px">65</span>
+              </div>
+              <div class="mock-bar-row">
+                <span class="mock-bar-label">Premium</span>
+                <div class="mock-bar-wrap"><div class="mock-bar-fill" style="width:45%;background:var(--accent)"></div></div>
+                <span style="font-size:.6rem;color:var(--muted);width:20px">45</span>
+              </div>
+              <div class="mock-bar-row">
+                <span class="mock-bar-label">VIP</span>
+                <div class="mock-bar-wrap"><div class="mock-bar-fill" style="width:25%;background:var(--gold)"></div></div>
+                <span style="font-size:.6rem;color:var(--muted);width:20px">24</span>
+              </div>
+            </div>
+            <div class="mock-box">
+              <div class="mock-box-title">Today's Visitors</div>
+              <div class="mock-member-row"><div class="mock-avatar"></div> Juan Dela Cruz <span class="mock-badge premium" style="margin-left:auto">Premium</span></div>
+              <div class="mock-member-row"><div class="mock-avatar" style="background:linear-gradient(135deg,#ff8c00,#ffd700)"></div> Walk-in Guest <span class="mock-badge" style="background:rgba(255,140,0,.15);color:#ff8c00;margin-left:auto">₱300</span></div>
+              <div class="mock-member-row"><div class="mock-avatar" style="background:linear-gradient(135deg,#b57bff,#6c00ff)"></div> Maria Santos <span class="mock-badge vip" style="margin-left:auto">VIP</span></div>
+              <div class="mock-member-row"><div class="mock-avatar" style="background:linear-gradient(135deg,#7cff6b,#00b300)"></div> Pedro Reyes <span class="mock-badge active" style="margin-left:auto">Basic</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item"><i class="fa fa-check-circle"></i> Member Management <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-calendar-check"></i> Trainer Scheduling <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-shopping-cart"></i> Product Shop <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-door-open"></i> Front Desk Check-in <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-chart-bar"></i> Revenue Analytics <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-tools"></i> Equipment Tracking <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-sync-alt"></i> Renewal Requests <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-shield-alt"></i> Role-Based Access <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-mobile-alt"></i> Mobile Responsive <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-database"></i> MySQL Backend <span class="sep"></span></span>
+    <!-- repeat for infinite scroll -->
+    <span class="ticker-item"><i class="fa fa-check-circle"></i> Member Management <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-calendar-check"></i> Trainer Scheduling <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-shopping-cart"></i> Product Shop <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-door-open"></i> Front Desk Check-in <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-chart-bar"></i> Revenue Analytics <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-tools"></i> Equipment Tracking <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-sync-alt"></i> Renewal Requests <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-shield-alt"></i> Role-Based Access <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-mobile-alt"></i> Mobile Responsive <span class="sep"></span></span>
+    <span class="ticker-item"><i class="fa fa-database"></i> MySQL Backend <span class="sep"></span></span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="container">
+    <div class="scroll-reveal">
+      <div class="section-eyebrow">Core Features</div>
+      <h2 class="section-title">Everything Your Gym Needs</h2>
+      <p class="section-desc">FitTech covers every operational layer of a modern gym — from the front door to the back office.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card fc-blue">
+        <div class="feature-icon"><i class="fa fa-users"></i></div>
+        <h3>Member Management</h3>
+        <p>Complete member registration with Gmail validation, Philippine phone format, role-based access, and automatic expiry tracking per membership tier.</p>
+        <span class="feature-tag">Core Module</span>
+      </div>
+
+      <div class="feature-card fc-green">
+        <div class="feature-icon"><i class="fa fa-calendar-alt"></i></div>
+        <h3>Trainer Scheduling</h3>
+        <p>Real-time conflict detection prevents double-bookings. See trainer availability by day, select duration (30min–3hr), and get automatic cost calculation.</p>
+        <span class="feature-tag">Smart Booking</span>
+      </div>
+
+      <div class="feature-card fc-red">
+        <div class="feature-icon"><i class="fa fa-store"></i></div>
+        <h3>Product Shop</h3>
+        <p>Full e-commerce experience with persistent cart, inventory tracking, product badges, image uploads, order history, and admin stock management.</p>
+        <span class="feature-tag">E-Commerce</span>
+      </div>
+
+      <div class="feature-card fc-gold">
+        <div class="feature-icon"><i class="fa fa-door-open"></i></div>
+        <h3>Front Desk Check-in</h3>
+        <p>Log registered member check-ins via live search, or record walk-in visitors with a single click. Revenue automatically tracked per visit.</p>
+        <span class="feature-tag">Front Desk</span>
+      </div>
+
+      <div class="feature-card fc-purple">
+        <div class="feature-icon"><i class="fa fa-chart-line"></i></div>
+        <h3>Revenue Analytics</h3>
+        <p>Real-time dashboard with shop revenue, trainer income, walk-in fees, membership revenue, renewal income, and top-product leaderboards.</p>
+        <span class="feature-tag">Admin Panel</span>
+      </div>
+
+      <div class="feature-card fc-teal">
+        <div class="feature-icon"><i class="fa fa-sync-alt"></i></div>
+        <h3>Renewal Requests</h3>
+        <p>Members submit upgrade/renewal requests. Admins approve with smart expiry stacking, reject with notes, or refund with full chain-unwind rollback.</p>
+        <span class="feature-tag">Membership Flow</span>
+      </div>
+
+      <div class="feature-card fc-red" style="animation-delay:0.1s">
+        <div class="feature-icon"><i class="fa fa-dumbbell"></i></div>
+        <h3>Workout Tracker</h3>
+        <p>Members log workout sessions with type, duration, calories burned, and notes. Personal stats aggregated on the dashboard in real time.</p>
+        <span class="feature-tag">Member Portal</span>
+      </div>
+
+      <div class="feature-card fc-blue" style="animation-delay:0.15s">
+        <div class="feature-icon"><i class="fa fa-tools"></i></div>
+        <h3>Equipment Monitor</h3>
+        <p>Track every piece of gym equipment with condition status (Excellent → Out of Service), location, last maintenance date, and admin notes.</p>
+        <span class="feature-tag">Maintenance</span>
+      </div>
+
+      <div class="feature-card fc-gold" style="animation-delay:0.2s">
+        <div class="feature-icon"><i class="fa fa-shield-alt"></i></div>
+        <h3>Role-Based Security</h3>
+        <p>Two-layer security enforcement — JavaScript guards block non-admin UI access while PHP backend verifies every admin API call independently.</p>
+        <span class="feature-tag">Security</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLES -->
+<section class="section roles-section" id="roles">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center">
+      <div class="section-eyebrow">Built for Everyone</div>
+      <h2 class="section-title">Four Roles, One System</h2>
+      <p class="section-desc" style="margin:0 auto">FitTech serves every person in your gym with a tailored experience based on their role.</p>
+    </div>
+
+    <div class="roles-grid">
+      <div class="role-card role-member">
+        <span class="role-emoji">💪</span>
+        <h3>Member</h3>
+        <p>Self-service portal for gym members to manage their fitness journey.</p>
+        <div class="role-perks">
+          <span class="role-perk">Workout logging & stats</span>
+          <span class="role-perk">Book trainer sessions</span>
+          <span class="role-perk">Shop products & track orders</span>
+          <span class="role-perk">View membership expiry</span>
+          <span class="role-perk">Submit renewal requests</span>
+        </div>
+      </div>
+      <div class="role-card role-trainer">
+        <span class="role-emoji">🏋️</span>
+        <h3>Trainer</h3>
+        <p>Certified coaches managed by admins with full scheduling visibility.</p>
+        <div class="role-perks">
+          <span class="role-perk">Individual profile cards</span>
+          <span class="role-perk">Specialty tags & rates</span>
+          <span class="role-perk">Photo uploads</span>
+          <span class="role-perk">Booking conflict detection</span>
+          <span class="role-perk">Hourly cost calculation</span>
+        </div>
+      </div>
+      <div class="role-card role-desk">
+        <span class="role-emoji">🖥️</span>
+        <h3>Front Desk</h3>
+        <p>Staff interface for managing daily gym entry and visitor logging.</p>
+        <div class="role-perks">
+          <span class="role-perk">Member check-in via search</span>
+          <span class="role-perk">Walk-in visitor logging</span>
+          <span class="role-perk">Daily check-in log</span>
+          <span class="role-perk">Today's revenue stats</span>
+          <span class="role-perk">Configurable walk-in rate</span>
+        </div>
+      </div>
+      <div class="role-card role-admin">
+        <span class="role-emoji">⚙️</span>
+        <h3>Admin</h3>
+        <p>Full system control with analytics, member management, and business oversight.</p>
+        <div class="role-perks">
+          <span class="role-perk">Revenue analytics dashboard</span>
+          <span class="role-perk">Member edit & management</span>
+          <span class="role-perk">Trainer & product control</span>
+          <span class="role-perk">Renewal approvals & refunds</span>
+          <span class="role-perk">Equipment condition tracking</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS SHOWCASE -->
+<section class="section" style="padding-bottom:0">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center">
+      <div class="section-eyebrow">By the Numbers</div>
+      <h2 class="section-title">Built with Precision</h2>
+    </div>
+    <div class="stats-showcase">
+      <div class="showcase-stat">
+        <div class="showcase-num" style="color:var(--accent)">11</div>
+        <div class="showcase-lbl">Database Tables</div>
+      </div>
+      <div class="showcase-stat">
+        <div class="showcase-num" style="color:var(--accent3)">8</div>
+        <div class="showcase-lbl">PHP API Endpoints</div>
+      </div>
+      <div class="showcase-stat">
+        <div class="showcase-num" style="color:var(--accent2)">3</div>
+        <div class="showcase-lbl">User Roles</div>
+      </div>
+      <div class="showcase-stat">
+        <div class="showcase-num" style="color:var(--gold)">40+</div>
+        <div class="showcase-lbl">Core Features</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MEMBERSHIP TIERS -->
+<section class="section" id="membership">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center">
+      <div class="section-eyebrow">Membership Plans</div>
+      <h2 class="section-title">Flexible Pricing Tiers</h2>
+      <p class="section-desc" style="margin:0 auto">All tiers are configurable by admin through the pricing editor. Walk-in rate included.</p>
+    </div>
+
+    <div class="tiers-grid">
+      <div class="tier-card tier-basic">
+        <div class="tier-name">Basic</div>
+        <div style="font-size:.8rem;color:var(--muted)">For new members</div>
+        <div class="tier-price">₱2,500 <span>/plan</span></div>
+        <div class="tier-duration">1 month gym access</div>
+        <ul class="tier-features">
+          <li><i class="fa fa-check" style="color:var(--accent3)"></i> Full gym equipment access</li>
+          <li><i class="fa fa-check" style="color:var(--accent3)"></i> Workout logging dashboard</li>
+          <li><i class="fa fa-check" style="color:var(--accent3)"></i> Trainer booking access</li>
+          <li><i class="fa fa-check" style="color:var(--accent3)"></i> Shop & order history</li>
+          <li><i class="fa fa-check" style="color:var(--accent3)"></i> Renewal request system</li>
+        </ul>
+      </div>
+
+      <div class="tier-card tier-premium featured">
+        <div class="tier-name">Premium</div>
+        <div style="font-size:.8rem;color:var(--muted);margin-top:20px">Best value</div>
+        <div class="tier-price">₱12,000 <span>/plan</span></div>
+        <div class="tier-duration">6 months gym access — save ₱3,000</div>
+        <ul class="tier-features">
+          <li><i class="fa fa-check"></i> Everything in Basic</li>
+          <li><i class="fa fa-check"></i> Priority trainer access</li>
+          <li><i class="fa fa-check"></i> Expiry carry-over on renewal</li>
+          <li><i class="fa fa-check"></i> Member dashboard analytics</li>
+          <li><i class="fa fa-check"></i> Extended session history</li>
+        </ul>
+      </div>
+
+      <div class="tier-card tier-vip">
+        <div class="tier-name">VIP</div>
+        <div style="font-size:.8rem;color:var(--muted)">Full year access</div>
+        <div class="tier-price">₱20,000 <span>/plan</span></div>
+        <div class="tier-duration">12 months gym access — best rate/day</div>
+        <ul class="tier-features">
+          <li><i class="fa fa-check"></i> Everything in Premium</li>
+          <li><i class="fa fa-check"></i> VIP badge on profile</li>
+          <li><i class="fa fa-check"></i> All amenities included</li>
+          <li><i class="fa fa-check"></i> Priority renewal queue</li>
+          <li><i class="fa fa-check"></i> Full year expiry stacking</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="margin-top:1.5rem;text-align:center">
+      <span class="chip chip-gold"><i class="fa fa-walking"></i> Walk-in Rate — ₱300/day — No Registration Needed</span>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="section" id="tech" style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <div class="scroll-reveal" style="text-align:center">
+      <div class="section-eyebrow">Technology Stack</div>
+      <h2 class="section-title">Built on Solid Foundations</h2>
+      <p class="section-desc" style="margin:0 auto">Deployable on any XAMPP local server — no cloud, no subscription, no data leaving your gym.</p>
+    </div>
+
+    <div class="tech-grid">
+      <div class="tech-item">
+        <span class="tech-icon">🌐</span>
+        <span class="tech-name">HTML5</span>
+        <span class="tech-role">Single-page UI</span>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🎨</span>
+        <span class="tech-name">CSS3</span>
+        <span class="tech-role">Design System</span>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">⚡</span>
+        <span class="tech-name">JavaScript</span>
+        <span class="tech-role">Fetch API / SPA</span>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🐘</span>
+        <span class="tech-name">PHP 8</span>
+        <span class="tech-role">Backend API</span>
+      </div>
+      <div class="tech-item">
+        <span class="tech-icon">🗄️</span>
+        <span class="tech-name">MySQL</span>
+        <span class="tech-role">Database (PDO)</span>
+      </div>
+    </div>
+
+    <div style="margin-top:3rem;display:flex;justify-content:center;gap:1rem;flex-wrap:wrap" class="scroll-reveal">
+      <span class="chip chip-cyan"><i class="fa fa-server"></i> XAMPP Local Server</span>
+      <span class="chip chip-green"><i class="fa fa-lock"></i> PDO Prepared Statements</span>
+      <span class="chip chip-green"><i class="fa fa-shield-alt"></i> SQL Injection Protection</span>
+      <span class="chip chip-cyan"><i class="fa fa-mobile-alt"></i> Mobile Responsive</span>
+      <span class="chip chip-gold"><i class="fa fa-bolt"></i> Async Fetch API</span>
+      <span class="chip chip-red"><i class="fa fa-user-shield"></i> RBAC Security</span>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <div class="scroll-reveal">
+      <div class="section-eyebrow" style="margin-bottom:.8rem">Ready to Launch?</div>
+      <h2 class="section-title">Start Managing Your Gym<br>the Smart Way</h2>
+      <p class="section-desc">
+        FitTech is ready to deploy. Import the SQL file, configure your XAMPP server, and your gym management system is live in minutes.
+      </p>
+      <div class="cta-actions">
+        <a href="login" class="btn-hero-primary">
+          <i class="fa fa-rocket"></i> Launch the App
+        </a>
+        <a href="#features" class="btn-hero-ghost">
+          <i class="fa fa-book"></i> Read the Docs
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-logo">FitTech</span>
+    <ul class="footer-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#roles">Roles</a></li>
+      <li><a href="#membership">Pricing</a></li>
+      <li><a href="#tech">Tech Stack</a></li>
+      <li><a href="login">Launch App</a></li>
+    </ul>
+    <span class="footer-copy">CC-105 · NEUST CICT · 2026</span>
+  </div>
+</footer>
+
+<script src="//code.tidio.co/czhprcfup7hnbyo14fplt87uqovyhlc1.js" async></script>
+
+<script>
+// ── HAMBURGER TOGGLE ──
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open');
+  document.body.style.overflow = mobileMenu.classList.contains('open') ? 'hidden' : '';
+});
+
+// Close mobile menu on link click
+mobileMenu.querySelectorAll('a').forEach(link => {
+  link.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+  });
+});
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const delay = entry.target.dataset.delay || 0;
+      setTimeout(() => {
+        entry.target.classList.add('visible');
+      }, delay);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+
+// Stagger feature cards
+document.querySelectorAll('.feature-card').forEach((card, i) => {
+  card.style.animationDelay = (i * 60) + 'ms';
+  observer.observe(card);
+});
+
+// Stagger role cards
+document.querySelectorAll('.role-card').forEach((card, i) => {
+  card.style.animationDelay = (i * 80) + 'ms';
+  observer.observe(card);
+});
+
+// Stagger tier cards
+document.querySelectorAll('.tier-card').forEach((card, i) => {
+  card.style.animationDelay = (i * 100) + 'ms';
+  observer.observe(card);
+});
+
+// Stagger tech items
+document.querySelectorAll('.tech-item').forEach((item, i) => {
+  item.style.animationDelay = (i * 60) + 'ms';
+  observer.observe(item);
+});
+
+// Stats showcase
+document.querySelectorAll('.stats-showcase').forEach(el => observer.observe(el));
+
+// ── SMOOTH ACTIVE NAV LINK HIGHLIGHTING ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.style.color = a.getAttribute('href') === '#' + current ? 'var(--text)' : '';
+  });
+}, { passive: true });
+</script>
+
+</body>
+</html>

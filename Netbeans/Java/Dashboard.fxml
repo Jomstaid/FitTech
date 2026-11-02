@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox spacing="0" style="-fx-background-color: #0f0f0f;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fittechfrontdesk.controller.DashboardController">
+
+    <!-- ── TOP BAR ── -->
+    <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-background-color: #00e5ff; -fx-padding: 10 20 10 20;">
+        <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #0f0f0f;" text="FITTECH FRONT DESK" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="clockLabel" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #0f0f0f;                       -fx-background-color: rgba(0,0,0,0.12); -fx-padding: 4 10; -fx-background-radius: 4;" />
+        <Label fx:id="welcomeLabel" style="-fx-font-size: 12; -fx-text-fill: #0f0f0f;" />
+        <Button onAction="#handleLogout" style="-fx-background-color: rgba(0,0,0,0.2); -fx-text-fill: #0f0f0f; -fx-font-size: 11; -fx-font-weight: bold; -fx-background-radius: 4; -fx-cursor: hand; -fx-padding: 4 12;" text="Logout" />
+    </HBox>
+
+    <!-- ── STATS BAR ── -->
+    <HBox spacing="0" style="-fx-background-color: #111111; -fx-border-color: #222; -fx-border-width: 0 0 1 0;">
+        <VBox alignment="CENTER" prefWidth="180" style="-fx-padding: 10; -fx-border-color: #222; -fx-border-width: 0 1 0 0;">
+            <Label fx:id="statCheckinsToday" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="—" />
+            <Label style="-fx-font-size: 10; -fx-text-fill: #666;" text="Check-ins Today" />
+        </VBox>
+        <VBox alignment="CENTER" prefWidth="180" style="-fx-padding: 10; -fx-border-color: #222; -fx-border-width: 0 1 0 0;">
+            <Label fx:id="statActiveNow" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #7cff6b;" text="—" />
+            <Label style="-fx-font-size: 10; -fx-text-fill: #666;" text="Active Sessions" />
+        </VBox>
+        <VBox alignment="CENTER" prefWidth="180" style="-fx-padding: 10; -fx-border-color: #222; -fx-border-width: 0 1 0 0;">
+            <Label fx:id="statWalkinsToday" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #ff8c00;" text="—" />
+            <Label style="-fx-font-size: 10; -fx-text-fill: #666;" text="Walk-ins Today" />
+        </VBox>
+        <VBox alignment="CENTER" prefWidth="180" style="-fx-padding: 10;">
+            <Label fx:id="statTotalMembers" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #b57bff;" text="—" />
+            <Label style="-fx-font-size: 10; -fx-text-fill: #666;" text="Total Members" />
+        </VBox>
+    </HBox>
+
+    <!-- ── TAB PANE ── -->
+    <TabPane style="-fx-background-color: #0f0f0f; -fx-tab-min-width: 120; -fx-tab-header-area-background: #0f0f0f;" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 1 — CHECK IN                        -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="✓  Check In for Members/Visitors">
+            <VBox spacing="10" style="-fx-padding: 16; -fx-background-color: #0f0f0f;">
+
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <TextField fx:id="searchField" onKeyReleased="#handleSearchLive" prefHeight="36" prefWidth="380" promptText="Search by name, username, status, membership, phone, age..." style="-fx-background-color: #1a1a1a; -fx-text-fill: white;                                       -fx-prompt-text-fill: #555; -fx-border-color: #333;                                       -fx-border-radius: 4; -fx-background-radius: 4; -fx-font-size: 13;" />
+                    <Button onAction="#handleSearch" prefHeight="36" style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f;                                    -fx-font-weight: bold; -fx-font-size: 12;                                    -fx-background-radius: 4; -fx-cursor: hand;" text="🔍 Search" />
+                    <Button onAction="#handleShowAll" prefHeight="36" style="-fx-background-color: #222; -fx-text-fill: #aaa;                                    -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="Show All" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Button onAction="#handleRefreshMembers" prefHeight="36" style="-fx-background-color: #1a1a1a; -fx-text-fill: #aaa;                                    -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="⟳ Refresh" />
+                </HBox>
+
+                <TableView fx:id="memberTable" style="-fx-background-color: #1a1a1a; -fx-border-color: #333;" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colId" maxWidth="64" minWidth="48" prefWidth="48" text="ID" />
+                        <TableColumn fx:id="colName" prefWidth="220" text="Full Name" />
+                        <TableColumn fx:id="colUsername" prefWidth="130" text="Username" />
+                        <TableColumn fx:id="colMembership" prefWidth="110" text="Membership" />
+                        <TableColumn fx:id="colStatus" prefWidth="90" text="Status" />
+                        <TableColumn fx:id="colExpiry" prefWidth="110" text="Expiry" />
+                        <TableColumn fx:id="colDaysLeft" prefWidth="90" text="Days Left" />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 13;" text="No members loaded. Click Refresh." />
+                    </placeholder>
+                </TableView>
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Button onAction="#handleCheckIn" prefHeight="42" prefWidth="240" style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f;                                    -fx-font-weight: bold; -fx-font-size: 13;                                    -fx-background-radius: 4; -fx-cursor: hand;" text="✓  CHECK IN SELECTED" />
+                    <Button onAction="#handleWalkin" prefHeight="42" prefWidth="180" style="-fx-background-color: #ff8c00; -fx-text-fill: white;                                    -fx-font-weight: bold; -fx-font-size: 13;                                    -fx-background-radius: 4; -fx-cursor: hand;" text="🚶 LOG WALK-IN" />
+                    <Label fx:id="checkInStatus" style="-fx-text-fill: #aaaaaa; -fx-font-size: 13;" wrapText="true" />
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label style="-fx-text-fill: #555; -fx-font-size: 11;" text="Recently Checked In:" />
+                    <Label fx:id="recentCheckins" style="-fx-text-fill: #7cff6b; -fx-font-size: 11;" text="—" wrapText="true" />
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 2 — REGISTER                        -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="＋  Register/Pay Realtime">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: #0f0f0f; -fx-background: #0f0f0f;">
+                <VBox spacing="14" style="-fx-padding: 24 40 24 40; -fx-background-color: #0f0f0f;">
+
+                    <Label style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="New Member Registration" />
+                    <Label style="-fx-font-size: 11; -fx-text-fill: #555;" text="All fields marked * are required. Validation matches the FitTech website." />
+
+                    <HBox spacing="20">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Full Name *" />
+                            <TextField fx:id="regFullName" promptText="e.g. Juan Dela Cruz" style="-fx-background-color: #1a1a1a; -fx-text-fill: white;                                               -fx-prompt-text-fill: #555; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4;                                               -fx-padding: 9; -fx-font-size: 13;" />
+                            <Label fx:id="errFullName" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Username * (3–20 chars, letters/numbers/_)" />
+                            <TextField fx:id="regUsername" promptText="e.g. juan_dela_cruz" style="-fx-background-color: #1a1a1a; -fx-text-fill: white;                                               -fx-prompt-text-fill: #555; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4;                                               -fx-padding: 9; -fx-font-size: 13;" />
+                            <Label fx:id="errUsername" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Email * (Gmail only)" />
+                            <TextField fx:id="regEmail" promptText="yourname@gmail.com" style="-fx-background-color: #1a1a1a; -fx-text-fill: white;                                               -fx-prompt-text-fill: #555; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4;                                               -fx-padding: 9; -fx-font-size: 13;" />
+                            <Label fx:id="errEmail" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Phone * (09XXXXXXXXX or +639XXXXXXXXX)" />
+                            <TextField fx:id="regPhone" promptText="09XXXXXXXXX" style="-fx-background-color: #1a1a1a; -fx-text-fill: white;                                               -fx-prompt-text-fill: #555; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4;                                               -fx-padding: 9; -fx-font-size: 13;" />
+                            <Label fx:id="errPhone" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Birthdate * mm/dd/yyyy (Age must be 15–80)" />
+                            <DatePicker fx:id="regBirthdate" maxWidth="Infinity" promptText="Select date" style="-fx-background-color: #1a1a1a; -fx-border-color: #333;                                                -fx-border-radius: 4; -fx-background-radius: 4;" />
+                            <Label fx:id="errBirthdate" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Age (auto-calculated)" />
+                            <TextField fx:id="regAge" editable="false" promptText="Auto-filled from birthdate" style="-fx-background-color: #111; -fx-text-fill: #00e5ff;                                               -fx-border-color: #222; -fx-border-radius: 4;                                               -fx-background-radius: 4; -fx-padding: 9; -fx-font-size: 13;" />
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Password * (min 8 chars, letter + number/special)" />
+                            <PasswordField fx:id="regPassword" promptText="Min 8 characters" style="-fx-background-color: #1a1a1a; -fx-text-fill: white;                                                   -fx-prompt-text-fill: #555; -fx-border-color: #333;                                                   -fx-border-radius: 4; -fx-background-radius: 4;                                                   -fx-padding: 9; -fx-font-size: 13;" />
+                            <Label fx:id="errPassword" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Sex *" />
+                            <ComboBox fx:id="regGender" maxWidth="Infinity" promptText="Select sex" style="-fx-background-color: #1a1a1a;" />
+                            <Label fx:id="errGender" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="20">
+                        <VBox prefWidth="280" spacing="4">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Membership Type" />
+                            <ComboBox fx:id="regMembership" maxWidth="Infinity" style="-fx-background-color: #1a1a1a;" />
+                        </VBox>
+                        <VBox alignment="CENTER_LEFT" spacing="4" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #aaa; -fx-font-size: 11;" text="Plan Details" />
+                            <Label fx:id="membershipPreview" style="-fx-text-fill: #7cff6b; -fx-font-size: 13; -fx-font-weight: bold;" text="Basic — ₱2,500 / 1 month" />
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="4">
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 10;" text="Password Strength" />
+                        <HBox spacing="4">
+                            <Label fx:id="pwStrength1" prefHeight="6" prefWidth="60" style="-fx-background-color: #222; -fx-background-radius: 3;" text="  " />
+                            <Label fx:id="pwStrength2" prefHeight="6" prefWidth="60" style="-fx-background-color: #222; -fx-background-radius: 3;" text="  " />
+                            <Label fx:id="pwStrength3" prefHeight="6" prefWidth="60" style="-fx-background-color: #222; -fx-background-radius: 3;" text="  " />
+                            <Label fx:id="pwStrengthLabel" style="-fx-text-fill: #555; -fx-font-size: 10; -fx-padding: 0 0 0 8;" text="" />
+                        </HBox>
+                    </VBox>
+
+                    <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 6 0 0 0;">
+                        <Button fx:id="regButton" onAction="#handleRegister" prefHeight="44" prefWidth="220" style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f;                                        -fx-font-weight: bold; -fx-font-size: 13;                                        -fx-background-radius: 4; -fx-cursor: hand;" text="REGISTER MEMBER" />
+                        <Button onAction="#handleClearForm" prefHeight="44" style="-fx-background-color: #222; -fx-text-fill: #aaa;                                        -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="Clear Form" />
+                        <Label fx:id="regStatus" maxWidth="380" style="-fx-text-fill: #aaaaaa; -fx-font-size: 12;" wrapText="true" />
+                    </HBox>
+
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 3 — TODAY'S SCHEDULE                -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="📅  Live Schedule of Trainers">
+            <VBox spacing="10" style="-fx-padding: 20; -fx-background-color: #0f0f0f;">
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="Today's Trainer Bookings" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="liveSessionCount" style="-fx-text-fill: #7cff6b; -fx-font-size: 12; -fx-font-weight: bold;                                   -fx-background-color: rgba(124,255,107,0.1); -fx-padding: 4 10;                                   -fx-background-radius: 12;" text="0 active" />
+                    <Button onAction="#handleRefreshSchedule" prefHeight="34" style="-fx-background-color: #333; -fx-text-fill: white;                                    -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12;" text="⟳ Refresh" />
+                </HBox>
+
+                <TableView fx:id="scheduleTable" style="-fx-background-color: #1a1a1a; -fx-border-color: #333;" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="schMember" prefWidth="160" text="Member" />
+                        <TableColumn fx:id="schTrainer" prefWidth="150" text="Trainer" />
+                        <TableColumn fx:id="schDate" prefWidth="100" text="Date" />
+                        <TableColumn fx:id="schTime" prefWidth="80" text="Start" />
+                        <TableColumn fx:id="schEndTime" prefWidth="80" text="End" />
+                        <TableColumn fx:id="schType" prefWidth="140" text="Type" />
+                        <TableColumn fx:id="schStatus" prefWidth="90" text="Status" />
+                        <TableColumn fx:id="schCountdown" prefWidth="110" text="⏱ Time Left" />
+                        <TableColumn fx:id="schAmount" prefWidth="85" text="Amount" />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 13;" text="No bookings for today." />
+                    </placeholder>
+                </TableView>
+
+                <HBox spacing="20" style="-fx-padding: 4 0 0 0;">
+                    <Label style="-fx-text-fill: #7cff6b; -fx-font-size: 11;" text="● Active (in progress)" />
+                    <Label style="-fx-text-fill: #00e5ff; -fx-font-size: 11;" text="● Upcoming" />
+                    <Label style="-fx-text-fill: #555; -fx-font-size: 11;" text="● Completed" />
+                    <Label style="-fx-text-fill: #ff5555; -fx-font-size: 11;" text="● Cancelled" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="scheduleStatus" style="-fx-text-fill: #555; -fx-font-size: 11;" />
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 4 — PENDING ORDERS                  -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="🛒  Pending Approval Orders">
+            <VBox spacing="10" style="-fx-padding: 16; -fx-background-color: #0f0f0f;">
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="Pending Orders" />
+                    <Label style="-fx-font-size: 11; -fx-text-fill: #555;" text="(One row per order — select to approve or reject)" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="cartSummaryLabel" style="-fx-text-fill: #ffd700; -fx-font-size: 12; -fx-font-weight: bold;                                   -fx-background-color: rgba(255,215,0,0.08); -fx-padding: 4 10;                                   -fx-background-radius: 12;" text="" />
+                    <Button onAction="#handleRefreshCart" prefHeight="34" style="-fx-background-color: #333; -fx-text-fill: white;                                    -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12;" text="⟳ Refresh" />
+                </HBox>
+
+                <TableView fx:id="cartTable" style="-fx-background-color: #1a1a1a; -fx-border-color: #333;" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="cartColOrderId" prefWidth="70" text="Order #" />
+                        <TableColumn fx:id="cartColName" prefWidth="180" text="Member" />
+                        <TableColumn fx:id="cartColUsername" prefWidth="120" text="Username" />
+                        <TableColumn fx:id="cartColMembership" prefWidth="100" text="Membership" />
+                        <TableColumn fx:id="cartColItems" prefWidth="80" text="Items" />
+                        <TableColumn fx:id="cartColValue" prefWidth="110" text="Amount" />
+                        <TableColumn fx:id="cartColDetail" prefWidth="300" text="Products" />
+                        <TableColumn fx:id="cartColDate" prefWidth="140" text="Placed On" />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 13;" text="No pending orders right now." />
+                    </placeholder>
+                </TableView>
+
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 4 0 0 0;">
+                    <Button fx:id="cartApproveBtn" onAction="#handleApproveOrder" prefHeight="38" prefWidth="160" style="-fx-background-color: #1a3a1a; -fx-text-fill: #7cff6b; -fx-font-weight: bold;                                    -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;                                    -fx-border-color: #2a5a2a; -fx-border-radius: 4;" text="✓  Approve Order" />
+                    <Button fx:id="cartRejectBtn" onAction="#handleRejectOrder" prefHeight="38" prefWidth="160" style="-fx-background-color: #3a1a1a; -fx-text-fill: #ff5555; -fx-font-weight: bold;                                    -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;                                    -fx-border-color: #5a2a2a; -fx-border-radius: 4;" text="✗  Reject Order" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label style="-fx-text-fill: #444; -fx-font-size: 11;" text="Select a row then click Approve or Reject." />
+                    <Label fx:id="cartStatus" style="-fx-text-fill: #555; -fx-font-size: 11;" />
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 5 — PURCHASE ANALYTICS              -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="💰  Approved Purchases ">
+            <VBox spacing="10" style="-fx-padding: 16; -fx-background-color: #0f0f0f;">
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="Products Purchased Per Member" />
+                    <Label style="-fx-font-size: 11; -fx-text-fill: #555;" text="(Approved Orders Only)" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="purchaseSummaryLabel" style="-fx-text-fill: #7cff6b; -fx-font-size: 12; -fx-font-weight: bold;                                   -fx-background-color: rgba(124,255,107,0.08); -fx-padding: 4 10;                                   -fx-background-radius: 12;" text="" />
+                    <Button onAction="#handleRefreshPurchases" prefHeight="34" style="-fx-background-color: #333; -fx-text-fill: white;                                    -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12;" text="⟳ Refresh" />
+                </HBox>
+
+                <TableView fx:id="purchaseTable" style="-fx-background-color: #1a1a1a; -fx-border-color: #333;" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="purColName" prefWidth="180" text="Member" />
+                        <TableColumn fx:id="purColUsername" prefWidth="110" text="Username" />
+                        <TableColumn fx:id="purColMembership" prefWidth="100" text="Membership" />
+                        <TableColumn fx:id="purColOrders" prefWidth="70" text="Orders" />
+                        <TableColumn fx:id="purColItems" prefWidth="100" text="Items Bought" />
+                        <TableColumn fx:id="purColSpent" prefWidth="110" text="Total Spent" />
+                        <TableColumn fx:id="purColFirst" prefWidth="130" text="First Purchase" />
+                        <TableColumn fx:id="purColLast" prefWidth="130" text="Last Purchase" />
+                        <TableColumn fx:id="purColDetail" prefWidth="380" text="Purchase History" />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 13;" text="No approved purchases found." />
+                    </placeholder>
+                </TableView>
+
+                <HBox spacing="8" style="-fx-padding: 4 0 0 0;">
+                    <Label style="-fx-text-fill: #444; -fx-font-size: 11;" text="Sorted by total spent (highest first). Only confirmed/approved orders are counted." />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="purchaseStatus" style="-fx-text-fill: #555; -fx-font-size: 11;" />
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 6 — MEMBERS (EDITABLE)              -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="👥  Listed Members">
+            <VBox spacing="0" style="-fx-background-color: #0f0f0f;">
+
+                <!-- Header + Search + Actions -->
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 14 16 10 16; -fx-background-color: #0f0f0f;">
+                    <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="All Members" />
+                    <Label fx:id="membersTabCount" style="-fx-font-size: 11; -fx-text-fill: #555;" text="" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <TextField fx:id="membersSearchField" onKeyReleased="#handleMembersSearch" prefHeight="34" prefWidth="260" promptText="Search name, status, membership, age, sex..." style="-fx-background-color: #1a1a1a; -fx-text-fill: white; -fx-prompt-text-fill: #555;                                       -fx-border-color: #333; -fx-border-radius: 4; -fx-background-radius: 4; -fx-font-size: 12;" />
+                    <Button onAction="#handleRefreshMembersTab" prefHeight="34" style="-fx-background-color: #1a1a1a; -fx-text-fill: #aaa; -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="⟳ Refresh" />
+                </HBox>
+
+                <!-- Edit form panel — shown when a row is selected -->
+                <VBox fx:id="memberEditPanel" managed="false" spacing="10" style="-fx-padding: 14 16 14 16; -fx-background-color: #111; -fx-border-color: #222; -fx-border-width: 0 0 1 0;" visible="false">
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="✏  Edit Member" />
+                        <Label fx:id="editMemberId" style="-fx-font-size: 11; -fx-text-fill: #444;" text="" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleCancelEdit" prefHeight="30" style="-fx-background-color: #222; -fx-text-fill: #aaa; -fx-font-size: 11; -fx-background-radius: 4; -fx-cursor: hand;" text="✕ Cancel" />
+                    </HBox>
+
+                    <!-- Row 1: Full Name / Username / Email -->
+                    <HBox spacing="14">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Full Name *" />
+                            <TextField fx:id="editFullName" style="-fx-background-color: #1a1a1a; -fx-text-fill: white; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 7; -fx-font-size: 12;" />
+                            <Label fx:id="editErrFullName" style="-fx-text-fill: #ff5555; -fx-font-size: 9;" text="" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Username * (3–20 chars)" />
+                            <TextField fx:id="editUsername" style="-fx-background-color: #1a1a1a; -fx-text-fill: white; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 7; -fx-font-size: 12;" />
+                            <Label fx:id="editErrUsername" style="-fx-text-fill: #ff5555; -fx-font-size: 9;" text="" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Email * (Gmail)" />
+                            <TextField fx:id="editEmail" style="-fx-background-color: #1a1a1a; -fx-text-fill: white; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 7; -fx-font-size: 12;" />
+                            <Label fx:id="editErrEmail" style="-fx-text-fill: #ff5555; -fx-font-size: 9;" text="" />
+                        </VBox>
+                    </HBox>
+
+                    <!-- Row 2: Phone / Gender / Birthdate / Membership / Status / Expiry -->
+                    <HBox spacing="14">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Phone *" />
+                            <TextField fx:id="editPhone" style="-fx-background-color: #1a1a1a; -fx-text-fill: white; -fx-border-color: #333;                                               -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 7; -fx-font-size: 12;" />
+                            <Label fx:id="editErrPhone" style="-fx-text-fill: #ff5555; -fx-font-size: 9;" text="" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Sex *" />
+                            <ComboBox fx:id="editGender" maxWidth="Infinity" style="-fx-background-color: #1a1a1a;" />
+                            <Label fx:id="editErrGender" style="-fx-text-fill: #ff5555; -fx-font-size: 9;" text="" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Birthdate *" />
+                            <DatePicker fx:id="editBirthdate" maxWidth="Infinity" style="-fx-background-color: #1a1a1a; -fx-border-color: #333; -fx-border-radius: 4;" />
+                            <Label fx:id="editErrBirthdate" style="-fx-text-fill: #ff5555; -fx-font-size: 9;" text="" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Membership" />
+                            <ComboBox fx:id="editMembership" maxWidth="Infinity" style="-fx-background-color: #1a1a1a;" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Status" />
+                            <ComboBox fx:id="editStatus" maxWidth="Infinity" style="-fx-background-color: #1a1a1a;" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Expiry Date (leave blank = auto)" />
+                            <DatePicker fx:id="editExpiry" maxWidth="Infinity" style="-fx-background-color: #1a1a1a; -fx-border-color: #333; -fx-border-radius: 4;" />
+                        </VBox>
+                    </HBox>
+
+                    <!-- Save row -->
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Button fx:id="editSaveBtn" onAction="#handleSaveMember" prefHeight="36" prefWidth="160" style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f; -fx-font-weight: bold;                                        -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="💾 Save Changes" />
+                        <Label fx:id="editStatusLabel" style="-fx-text-fill: #aaa; -fx-font-size: 12;" wrapText="true" />
+                    </HBox>
+
+                </VBox>
+
+                <!-- Members table — read-only summary, click a row to edit -->
+                <TableView fx:id="membersTable" onMouseClicked="#handleMembersTableClick" style="-fx-background-color: #1a1a1a; -fx-border-color: #333;" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="mColId" maxWidth="56" minWidth="40" prefWidth="50" text="ID" />
+                        <TableColumn fx:id="mColName" prefWidth="200" text="Full Name" />
+                        <TableColumn fx:id="mColUsername" prefWidth="130" text="Username" />
+                        <TableColumn fx:id="mColEmail" prefWidth="200" text="Email" />
+                        <TableColumn fx:id="mColPhone" prefWidth="130" text="Phone" />
+                        <TableColumn fx:id="mColGender" prefWidth="80" text="Sex" />
+                        <TableColumn fx:id="mColBirthdate" prefWidth="110" text="Birthdate" />
+                        <TableColumn fx:id="mColAge" prefWidth="55" text="Age" />
+                        <TableColumn fx:id="mColMembership" prefWidth="100" text="Membership" />
+                        <TableColumn fx:id="mColStatus" prefWidth="90" text="Status" />
+                        <TableColumn fx:id="mColExpiry" prefWidth="110" text="Expiry" />
+                        <TableColumn fx:id="mColDaysLeft" prefWidth="90" text="Days Left" />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 13;" text="No members loaded." />
+                    </placeholder>
+                </TableView>
+
+                <!-- Footer -->
+                <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 8 16 8 16; -fx-background-color: #0d0d0d;">
+                    <Label style="-fx-text-fill: #444; -fx-font-size: 10;" text="Click any row to edit. All changes are validated before saving." />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="membersTabStatus" style="-fx-text-fill: #555; -fx-font-size: 11;" text="" />
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 7 — RENEWAL REQUESTS                -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="🔄  Renewal Requests">
+            <VBox spacing="10" style="-fx-padding: 16; -fx-background-color: #0f0f0f;">
+
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;"
+                           text="Member Renewal Requests" />
+                    <Label style="-fx-font-size: 11; -fx-text-fill: #555;"
+                           text="(Approve · Reject · Refund)" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="renewalSummaryLabel"
+                           style="-fx-text-fill: #ff8c00; -fx-font-size: 12; -fx-font-weight: bold;
+                                  -fx-background-color: rgba(255,140,0,0.08); -fx-padding: 4 10;
+                                  -fx-background-radius: 12;" text="" />
+                    <Button onAction="#handleRefreshRenewal" prefHeight="34"
+                            style="-fx-background-color: #333; -fx-text-fill: white;
+                                   -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12;" text="⟳ Refresh" />
+                </HBox>
+
+                <!-- Filter buttons: Pending / All -->
+                <HBox spacing="8">
+                    <Button fx:id="renewFilterExpired" onAction="#handleRenewalFilterExpired" prefHeight="30"
+                            style="-fx-background-color: #1a1a00; -fx-text-fill: #ffd700; -fx-font-weight: bold;
+                                   -fx-border-color: #3a3a00; -fx-border-radius: 4;
+                                   -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11;" text="⏳ Pending" />
+                    <Button fx:id="renewFilterAll" onAction="#handleRenewalFilterAll" prefHeight="30"
+                            style="-fx-background-color: #1a1a1a; -fx-text-fill: #aaa;
+                                   -fx-border-color: #333; -fx-border-radius: 4;
+                                   -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 11;" text="All Requests" />
+                </HBox>
+
+                <TableView fx:id="renewalTable" style="-fx-background-color: #1a1a1a; -fx-border-color: #333;" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="renColId"         prefWidth="55"  text="Req #" />
+                        <TableColumn fx:id="renColName"       prefWidth="180" text="Member" />
+                        <TableColumn fx:id="renColUsername"   prefWidth="120" text="Username" />
+                        <TableColumn fx:id="renColMembership" prefWidth="160" text="Current → Requested" />
+                        <TableColumn fx:id="renColStatus"     prefWidth="90"  text="Status" />
+                        <TableColumn fx:id="renColExpiry"     prefWidth="110" text="Live Expiry" />
+                        <TableColumn fx:id="renColDaysLeft"   prefWidth="110" text="Days Left" />
+                        <TableColumn fx:id="renColPhone"      prefWidth="100" text="Amount (₱)" />
+                        <TableColumn fx:id="renColEmail"      prefWidth="140" text="Submitted On" />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 13;"
+                               text="No renewal requests. Click Refresh." />
+                    </placeholder>
+                </TableView>
+
+                <!-- Action row — Approve, Reject, Refund -->
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 4 0 0 0;">
+                    <Button onAction="#handleRenewMember" prefHeight="38" prefWidth="160"
+                            style="-fx-background-color: #1a3a1a; -fx-text-fill: #7cff6b; -fx-font-weight: bold;
+                                   -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;
+                                   -fx-border-color: #2a5a2a; -fx-border-radius: 4;" text="✓  Approve" />
+                    <Button onAction="#handleRejectRenewal" prefHeight="38" prefWidth="160"
+                            style="-fx-background-color: #3a1a1a; -fx-text-fill: #ff5555; -fx-font-weight: bold;
+                                   -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;
+                                   -fx-border-color: #5a2a2a; -fx-border-radius: 4;" text="✗  Reject" />
+                    <Button onAction="#handleRefundRenewal" prefHeight="38" prefWidth="160"
+                            style="-fx-background-color: #1a103a; -fx-text-fill: #b57bff; -fx-font-weight: bold;
+                                   -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;
+                                   -fx-border-color: #2a1a5a; -fx-border-radius: 4;" text="↩  Refund" />
+                    <!-- renewMembershipCombo kept for backwards compatibility with setupRenewalTab -->
+                    <ComboBox fx:id="renewMembershipCombo" managed="false" visible="false" prefHeight="34"
+                              style="-fx-background-color: #1a1a1a;" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label style="-fx-text-fill: #444; -fx-font-size: 11;"
+                           text="Select a row then Approve / Reject / Refund." />
+                    <Label fx:id="renewalStatus" style="-fx-text-fill: #555; -fx-font-size: 12;" />
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 8 — EQUIPMENT                       -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="🏋  Equipment">
+            <VBox spacing="0" style="-fx-background-color: #0f0f0f;">
+
+                <!-- Header toolbar -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-padding: 14 16 10 16; -fx-background-color: #0f0f0f;">
+                    <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="Equipment Inventory" />
+                    <Label fx:id="equipSummaryLabel"
+                           style="-fx-text-fill: #7cff6b; -fx-font-size: 11; -fx-font-weight: bold;
+                                  -fx-background-color: rgba(124,255,107,0.08); -fx-padding: 3 10;
+                                  -fx-background-radius: 10;" text="" />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <TextField fx:id="equipSearchField" onKeyReleased="#handleEquipSearch"
+                               prefHeight="34" prefWidth="220" promptText="Filter name / category…"
+                               style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                      -fx-prompt-text-fill: #555; -fx-border-color: #333;
+                                      -fx-border-radius: 4; -fx-background-radius: 4; -fx-font-size: 12;" />
+                    <Button onAction="#handleRefreshEquipment" prefHeight="34"
+                            style="-fx-background-color: #1a1a1a; -fx-text-fill: #aaa;
+                                   -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="⟳ Refresh" />
+                    <Button onAction="#handleNewEquip" prefHeight="34"
+                            style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f; -fx-font-weight: bold;
+                                   -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="＋ Add Equipment" />
+                </HBox>
+
+                <!-- Add / Edit panel (hidden by default) -->
+                <VBox fx:id="equipEditPanel" managed="false" spacing="10" visible="false"
+                      style="-fx-padding: 14 16 14 16; -fx-background-color: #111;
+                             -fx-border-color: #00e5ff #222 #222 #222; -fx-border-width: 1 0 1 0;">
+
+                    <HBox alignment="CENTER_LEFT" spacing="8">
+                        <Label fx:id="equipEditName"
+                               style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="＋ Add Equipment" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button fx:id="equipDeleteBtn" onAction="#handleDeleteEquip" prefHeight="30"
+                                style="-fx-background-color: #3a1010; -fx-text-fill: #ff5555; -fx-font-size: 11;
+                                       -fx-background-radius: 4; -fx-cursor: hand; -fx-border-color: #5a2020;
+                                       -fx-border-radius: 4;" text="🗑 Delete" />
+                        <Button onAction="#handleCancelEquipEdit" prefHeight="30"
+                                style="-fx-background-color: #222; -fx-text-fill: #aaa; -fx-font-size: 11;
+                                       -fx-background-radius: 4; -fx-cursor: hand;" text="✕ Cancel" />
+                    </HBox>
+
+                    <!-- Row 1: name, category, qty, condition -->
+                    <HBox spacing="12">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Equipment Name *" />
+                            <TextField fx:id="equipNameField" prefHeight="34" promptText="e.g. Barbell, Treadmill…"
+                                       style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                              -fx-border-color: #333; -fx-border-radius: 4;
+                                              -fx-background-radius: 4; -fx-font-size: 12;" />
+                            <Label fx:id="equipErrName" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Category *" />
+                            <ComboBox fx:id="equipCategoryCombo" maxWidth="Infinity" prefHeight="34"
+                                      style="-fx-background-color: #1a1a1a;" />
+                            <Label fx:id="equipErrCategory" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                        <VBox spacing="3" prefWidth="90">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Qty *" />
+                            <TextField fx:id="equipQtyField" prefHeight="34" promptText="0"
+                                       style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                              -fx-border-color: #333; -fx-border-radius: 4;
+                                              -fx-background-radius: 4; -fx-font-size: 12;" />
+                            <Label fx:id="equipErrQty" style="-fx-text-fill: #ff5555; -fx-font-size: 10;" text="" />
+                        </VBox>
+                        <VBox spacing="3" prefWidth="140">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Condition *" />
+                            <ComboBox fx:id="equipConditionCombo" maxWidth="Infinity" prefHeight="34"
+                                      style="-fx-background-color: #1a1a1a;" />
+                        </VBox>
+                    </HBox>
+
+                    <!-- Row 2: location, notes, save -->
+                    <HBox spacing="12" alignment="BOTTOM_LEFT">
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Location / Area" />
+                            <TextField fx:id="equipLocationField" prefHeight="34" promptText="e.g. Main Floor, Storage…"
+                                       style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                              -fx-border-color: #333; -fx-border-radius: 4;
+                                              -fx-background-radius: 4; -fx-font-size: 12;" />
+                        </VBox>
+                        <VBox spacing="3" HBox.hgrow="ALWAYS">
+                            <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Notes" />
+                            <TextField fx:id="equipNotesField" prefHeight="34" promptText="Optional notes…"
+                                       style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                              -fx-border-color: #333; -fx-border-radius: 4;
+                                              -fx-background-radius: 4; -fx-font-size: 12;" />
+                        </VBox>
+                        <Button fx:id="equipSaveBtn" onAction="#handleSaveEquip" prefHeight="34" prefWidth="140"
+                                style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f; -fx-font-weight: bold;
+                                       -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;" text="💾 Save" />
+                        <Label fx:id="equipStatusLabel" style="-fx-text-fill: #aaa; -fx-font-size: 12;" text="" />
+                    </HBox>
+
+                </VBox>
+
+                <!-- Equipment table -->
+                <TableView fx:id="equipTable" onMouseClicked="#handleEquipTableClick"
+                           style="-fx-background-color: #1a1a1a; -fx-border-color: #333;" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="equipColId"        prefWidth="50"  text="ID" />
+                        <TableColumn fx:id="equipColName"      prefWidth="190" text="Equipment Name" />
+                        <TableColumn fx:id="equipColCategory"  prefWidth="120" text="Category" />
+                        <TableColumn fx:id="equipColCondition" prefWidth="115" text="Condition" />
+                        <TableColumn fx:id="equipColQty"       prefWidth="60"  text="Qty" />
+                        <TableColumn fx:id="equipColLocation"  prefWidth="130" text="Location" />
+                        <TableColumn fx:id="equipColLastCheck" prefWidth="125" text="Last Checked" />
+                        <TableColumn fx:id="equipColNotes"     prefWidth="230" text="Notes" />
+                    </columns>
+                    <placeholder>
+                        <Label style="-fx-text-fill: #555; -fx-font-size: 13;"
+                               text="No equipment records found. Click ＋ Add Equipment." />
+                    </placeholder>
+                </TableView>
+
+                <!-- Footer -->
+                <HBox alignment="CENTER_LEFT" spacing="12"
+                      style="-fx-padding: 6 16 6 16; -fx-background-color: #0d0d0d;">
+                    <Label style="-fx-text-fill: #444; -fx-font-size: 10;"
+                           text="Click a row to edit or delete. Red = Poor/Needs Repair." />
+                    <Region HBox.hgrow="ALWAYS" />
+                    <Label fx:id="equipStatusFooter" style="-fx-text-fill: #555; -fx-font-size: 11;" text="" />
+                </HBox>
+
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 9 — PASSWORD RESET                  -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="🔑  Reset Password">
+            <VBox spacing="0" style="-fx-background-color: #0f0f0f;">
+
+                <!-- Header -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-padding: 14 16 10 16; -fx-background-color: #0f0f0f;">
+                    <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="Member Password Reset" />
+                    <Label style="-fx-font-size: 11; -fx-text-fill: #555;"
+                           text="Face-to-face reset — generate token, read it to member, set new password in one sitting." />
+                </HBox>
+
+                <ScrollPane fitToWidth="true"
+                            style="-fx-background-color: #0f0f0f; -fx-background: #0f0f0f;" VBox.vgrow="ALWAYS">
+                    <VBox spacing="14" style="-fx-padding: 10 60 24 60; -fx-background-color: #0f0f0f; -fx-max-width: 680;">
+
+                        <!-- STEP 1 — Find member by Gmail -->
+                        <VBox spacing="10"
+                              style="-fx-background-color: #111; -fx-border-color: #222; -fx-border-radius: 6;
+                                     -fx-background-radius: 6; -fx-padding: 16;">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #00e5ff;
+                                              -fx-background-color: #00e5ff22; -fx-padding: 2 8;
+                                              -fx-background-radius: 10;" text="STEP 1" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #ccc;" text="Enter the member's Gmail address" />
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <TextField fx:id="pwrEmailField" prefHeight="38" prefWidth="340"
+                                           promptText="member@gmail.com"
+                                           style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                                  -fx-prompt-text-fill: #555; -fx-border-color: #333;
+                                                  -fx-border-radius: 4; -fx-background-radius: 4; -fx-font-size: 13;" />
+                                <Button fx:id="pwrGenerateBtn" onAction="#handleGenerateToken" prefHeight="38" prefWidth="180"
+                                        style="-fx-background-color: #00e5ff; -fx-text-fill: #0f0f0f; -fx-font-weight: bold;
+                                               -fx-font-size: 12; -fx-background-radius: 4; -fx-cursor: hand;"
+                                        text="🔑 Generate Token" />
+                            </HBox>
+                            <Label fx:id="pwrStep1Status" style="-fx-font-size: 12; -fx-text-fill: #aaa;" text="" />
+                        </VBox>
+
+                        <!-- STEP 2 — Token display (shows after step 1 succeeds) -->
+                        <VBox fx:id="pwrStep2Box" managed="false" spacing="10" visible="false"
+                              style="-fx-background-color: #111; -fx-border-color: #222; -fx-border-radius: 6;
+                                     -fx-background-radius: 6; -fx-padding: 16;">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #ffd700;
+                                              -fx-background-color: #ffd70022; -fx-padding: 2 8;
+                                              -fx-background-radius: 10;" text="STEP 2" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #ccc;" text="Read this token to the member" />
+                            </HBox>
+                            <HBox alignment="CENTER" spacing="0"
+                                  style="-fx-background-color: #0a1a0a; -fx-border-color: #7cff6b;
+                                         -fx-border-radius: 6; -fx-background-radius: 6; -fx-padding: 14 24;">
+                                <Label fx:id="pwrTokenDisplay"
+                                       style="-fx-font-size: 32; -fx-font-weight: bold; -fx-text-fill: #7cff6b;
+                                              -fx-font-family: 'Courier New', monospace; -fx-letter-spacing: 8px;" text="— — — — — —" />
+                            </HBox>
+                            <Label style="-fx-font-size: 11; -fx-text-fill: #666;"
+                                   text="⚠ Token expires in 10 minutes. Read it clearly to the member standing in front of you." />
+                            <HBox>
+                                <Label fx:id="pwrMemberName" style="-fx-font-size: 11; -fx-text-fill: #aaa;" text="" />
+                            </HBox>
+                        </VBox>
+
+                        <!-- STEP 3 — New password (shows after step 2) -->
+                        <VBox fx:id="pwrStep3Box" managed="false" spacing="10" visible="false"
+                              style="-fx-background-color: #111; -fx-border-color: #222; -fx-border-radius: 6;
+                                     -fx-background-radius: 6; -fx-padding: 16;">
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #b57bff;
+                                              -fx-background-color: #b57bff22; -fx-padding: 2 8;
+                                              -fx-background-radius: 10;" text="STEP 3" />
+                                <Label style="-fx-font-size: 12; -fx-text-fill: #ccc;"
+                                       text="Member tells you their new password — type it here" />
+                            </HBox>
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="New Password" />
+                                    <PasswordField fx:id="pwrNewPassword" prefHeight="38"
+                                                   style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                                          -fx-border-color: #333; -fx-border-radius: 4;
+                                                          -fx-background-radius: 4; -fx-font-size: 13;" />
+                                </VBox>
+                                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                    <Label style="-fx-text-fill: #888; -fx-font-size: 10;" text="Confirm Password" />
+                                    <PasswordField fx:id="pwrConfirmPassword" prefHeight="38"
+                                                   style="-fx-background-color: #1a1a1a; -fx-text-fill: white;
+                                                          -fx-border-color: #333; -fx-border-radius: 4;
+                                                          -fx-background-radius: 4; -fx-font-size: 13;" />
+                                </VBox>
+                            </HBox>
+                            <Label fx:id="pwrPasswordErr" style="-fx-text-fill: #ff5555; -fx-font-size: 11;" text="" />
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Button fx:id="pwrResetBtn" onAction="#handleConfirmReset" prefHeight="40" prefWidth="200"
+                                        style="-fx-background-color: #b57bff; -fx-text-fill: #0f0f0f; -fx-font-weight: bold;
+                                               -fx-font-size: 13; -fx-background-radius: 4; -fx-cursor: hand;"
+                                        text="✓ Confirm Password Reset" />
+                                <Button onAction="#handleCancelReset" prefHeight="40"
+                                        style="-fx-background-color: #222; -fx-text-fill: #aaa; -fx-font-size: 12;
+                                               -fx-background-radius: 4; -fx-cursor: hand;" text="✕ Start Over" />
+                            </HBox>
+                            <Label fx:id="pwrResetStatus" style="-fx-font-size: 12; -fx-text-fill: #aaa;" text="" />
+                        </VBox>
+
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+        </Tab>
+
+        <!-- ════════════════════════════════════════ -->
+        <!--  TAB 9 — ANALYTICS                       -->
+        <!-- ════════════════════════════════════════ -->
+        <Tab text="📊  Analytics">
+            <ScrollPane fitToWidth="true" style="-fx-background-color: #0f0f0f; -fx-background: #0f0f0f;">
+                <VBox spacing="16" style="-fx-padding: 16; -fx-background-color: #0f0f0f;">
+
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label style="-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="Gym Analytics Overview" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Button onAction="#handleRefreshAnalytics" prefHeight="34"
+                                style="-fx-background-color: #333; -fx-text-fill: white;
+                                       -fx-background-radius: 4; -fx-cursor: hand; -fx-font-size: 12;" text="⟳ Refresh" />
+                    </HBox>
+
+                    <!-- KPI Cards row -->
+                    <HBox spacing="12">
+                        <VBox alignment="CENTER" prefHeight="90" prefWidth="180"
+                              style="-fx-background-color: #111; -fx-border-color: #00e5ff;
+                                     -fx-border-width: 0 0 0 3; -fx-padding: 12; -fx-background-radius: 4;">
+                            <Label fx:id="anTotalMembers" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="—" />
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #555;" text="TOTAL MEMBERS" />
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="90" prefWidth="180"
+                              style="-fx-background-color: #111; -fx-border-color: #7cff6b;
+                                     -fx-border-width: 0 0 0 3; -fx-padding: 12; -fx-background-radius: 4;">
+                            <Label fx:id="anActiveMembers" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #7cff6b;" text="—" />
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #555;" text="ACTIVE MEMBERS" />
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="90" prefWidth="180"
+                              style="-fx-background-color: #111; -fx-border-color: #ff5555;
+                                     -fx-border-width: 0 0 0 3; -fx-padding: 12; -fx-background-radius: 4;">
+                            <Label fx:id="anExpiredMembers" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #ff5555;" text="—" />
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #555;" text="EXPIRED" />
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="90" prefWidth="180"
+                              style="-fx-background-color: #111; -fx-border-color: #ffd700;
+                                     -fx-border-width: 0 0 0 3; -fx-padding: 12; -fx-background-radius: 4;">
+                            <Label fx:id="anExpiringSoon" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #ffd700;" text="—" />
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #555;" text="EXPIRING ≤ 7 DAYS" />
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="90" prefWidth="180"
+                              style="-fx-background-color: #111; -fx-border-color: #ff8c00;
+                                     -fx-border-width: 0 0 0 3; -fx-padding: 12; -fx-background-radius: 4;">
+                            <Label fx:id="anTodayCheckins" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #ff8c00;" text="—" />
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #555;" text="CHECK-INS TODAY" />
+                        </VBox>
+                        <VBox alignment="CENTER" prefHeight="90" prefWidth="180"
+                              style="-fx-background-color: #111; -fx-border-color: #b57bff;
+                                     -fx-border-width: 0 0 0 3; -fx-padding: 12; -fx-background-radius: 4;">
+                            <Label fx:id="anRevenue" style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #b57bff;" text="—" />
+                            <Label style="-fx-font-size: 10; -fx-text-fill: #555;" text="TOTAL REVENUE (₱)" />
+                        </VBox>
+                    </HBox>
+
+                    <!-- Membership breakdown table -->
+                    <VBox spacing="6" style="-fx-background-color: #111; -fx-border-color: #222; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 14;">
+                        <Label style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="MEMBERSHIP BREAKDOWN" />
+                        <TableView fx:id="anBreakdownTable" prefHeight="160"
+                                   style="-fx-background-color: #1a1a1a; -fx-border-color: #333;">
+                            <columns>
+                                <TableColumn fx:id="anBrkType"    prefWidth="140" text="Membership" />
+                                <TableColumn fx:id="anBrkCount"   prefWidth="100" text="Members" />
+                                <TableColumn fx:id="anBrkActive"  prefWidth="100" text="Active" />
+                                <TableColumn fx:id="anBrkExpired" prefWidth="100" text="Expired" />
+                                <TableColumn fx:id="anBrkRevenue" prefWidth="150" text="Revenue (₱)" />
+                            </columns>
+                            <placeholder>
+                                <Label style="-fx-text-fill: #555;" text="No data." />
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                    <!-- Recent check-ins table -->
+                    <VBox spacing="6" style="-fx-background-color: #111; -fx-border-color: #222; -fx-border-radius: 4; -fx-background-radius: 4; -fx-padding: 14;">
+                        <Label style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #00e5ff;" text="RECENT CHECK-INS (Last 20)" />
+                        <TableView fx:id="anCheckinsTable" prefHeight="240"
+                                   style="-fx-background-color: #1a1a1a; -fx-border-color: #333;">
+                            <columns>
+                                <TableColumn fx:id="anChkName"       prefWidth="200" text="Member" />
+                                <TableColumn fx:id="anChkMembership" prefWidth="110" text="Membership" />
+                                <TableColumn fx:id="anChkType"       prefWidth="110" text="Type" />
+                                <TableColumn fx:id="anChkTime"       prefWidth="160" text="Check-in Time" />
+                            </columns>
+                            <placeholder>
+                                <Label style="-fx-text-fill: #555;" text="No check-ins today." />
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                    <HBox spacing="8">
+                        <Label style="-fx-text-fill: #444; -fx-font-size: 11;" text="Data refreshes every 60 seconds." />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="analyticsStatus" style="-fx-text-fill: #555; -fx-font-size: 11;" text="" />
+                    </HBox>
+
+                </VBox>
+            </ScrollPane>
+        </Tab>
+
+    </TabPane>
+</VBox>

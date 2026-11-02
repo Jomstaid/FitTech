@@ -1,0 +1,100 @@
+/* FitTech Front Desk — JavaFX Stylesheet */
+
+.root {
+    -fx-background-color: #0f0f0f;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Tab Pane */
+.tab-pane {
+    -fx-background-color: #0f0f0f;
+}
+.tab-pane .tab-header-area {
+    -fx-background-color: #1a1a1a;
+    -fx-padding: 0;
+}
+.tab-pane .tab {
+    -fx-background-color: #1a1a1a;
+    -fx-padding: 10 20 10 20;
+}
+.tab-pane .tab .tab-label {
+    -fx-text-fill: #888888;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.tab-pane .tab:selected {
+    -fx-background-color: #0f0f0f;
+}
+.tab-pane .tab:selected .tab-label {
+    -fx-text-fill: #00e5ff;
+}
+
+/* Table */
+.table-view {
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: #2a2a2a;
+    -fx-table-cell-border-color: #2a2a2a;
+}
+.table-view .column-header {
+    -fx-background-color: #222222;
+}
+.table-view .column-header .label {
+    -fx-text-fill: #00e5ff;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+.table-row-cell {
+    -fx-background-color: #1a1a1a;
+    -fx-text-fill: #cccccc;
+}
+.table-row-cell:odd {
+    -fx-background-color: #1f1f1f;
+}
+.table-row-cell:selected {
+    -fx-background-color: #00e5ff22;
+    -fx-text-fill: white;
+}
+.table-cell {
+    -fx-text-fill: #cccccc;
+    -fx-font-size: 13px;
+    -fx-padding: 8 10 8 10;
+}
+
+/* Scroll Bar */
+.scroll-bar {
+    -fx-background-color: #1a1a1a;
+}
+.scroll-bar .thumb {
+    -fx-background-color: #333333;
+    -fx-background-radius: 4;
+}
+
+/* Combo Box */
+.combo-box {
+    -fx-background-color: #1a1a1a;
+    -fx-border-color: #333333;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+.combo-box .list-cell {
+    -fx-text-fill: white;
+    -fx-background-color: #1a1a1a;
+    -fx-padding: 8;
+    -fx-font-size: 13px;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: #222222;
+    -fx-border-color: #333333;
+}
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #00e5ff22;
+}
+
+/* Scroll Pane */
+.scroll-pane {
+    -fx-background-color: #0f0f0f;
+    -fx-background: #0f0f0f;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: #0f0f0f;
+}

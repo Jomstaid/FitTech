@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitTech — Page Not Found</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<style>
+:root {
+  --bg:       #060a0f;
+  --surface:  #0d1520;
+  --surface2: #121d2e;
+  --border:   rgba(255,255,255,0.06);
+  --accent:   #00e5ff;
+  --accent2:  #ff3d6b;
+  --accent3:  #7cff6b;
+  --gold:     #ffd700;
+  --text:     #e8edf5;
+  --muted:    #4a5c78;
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+/* ── FIX: make html+body fill full viewport, no overflow clipping content ── */
+html {
+  height: 100%;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden; /* allow vertical scroll on mobile, block horizontal */
+}
+
+/* ── GRID ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0,229,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,229,255,0.025) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}
+
+@keyframes glitch1 {
+  0%,100% { clip-path:inset(0 0 95% 0); transform:translate(-4px, 0); }
+  20%     { clip-path:inset(30% 0 50% 0); transform:translate(4px, 0); }
+  40%     { clip-path:inset(60% 0 20% 0); transform:translate(-2px, 0); }
+  60%     { clip-path:inset(10% 0 80% 0); transform:translate(3px, 0); }
+  80%     { clip-path:inset(80% 0 5% 0);  transform:translate(-3px, 0); }
+}
+
+@keyframes glitch2 {
+  0%,100% { clip-path:inset(50% 0 30% 0); transform:translate(4px, 0); }
+  20%     { clip-path:inset(10% 0 70% 0); transform:translate(-4px, 0); }
+  40%     { clip-path:inset(80% 0 10% 0); transform:translate(2px, 0); }
+  60%     { clip-path:inset(40% 0 45% 0); transform:translate(-3px, 0); }
+  80%     { clip-path:inset(20% 0 60% 0); transform:translate(3px, 0); }
+}
+
+@keyframes scanline {
+  from { top: -100%; }
+  to   { top: 200%; }
+}
+
+@keyframes flicker {
+  0%,100%{ opacity:1; }
+  92%    { opacity:1; }
+  93%    { opacity:0.8; }
+  94%    { opacity:1; }
+  96%    { opacity:0.9; }
+  98%    { opacity:1; }
+}
+
+@keyframes float-particle {
+  0%   { transform:translateY(0)   rotate(0deg);   opacity:0; }
+  10%  { opacity:1; }
+  90%  { opacity:0.6; }
+  100% { transform:translateY(-100vh) rotate(720deg); opacity:0; }
+}
+
+@keyframes pulse-ring {
+  0%   { transform:translate(-50%,-50%) scale(0.8); opacity:0.6; }
+  100% { transform:translate(-50%,-50%) scale(2.2); opacity:0; }
+}
+
+@keyframes blink {
+  0%,100% { opacity:1; }
+  50%     { opacity:0; }
+}
+
+@keyframes spin-slow {
+  to { transform: rotate(360deg); }
+}
+
+/* ── SCANLINE ── */
+.scanline {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(transparent, rgba(0,229,255,0.15), transparent);
+  animation: scanline 3s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── PARTICLES ── */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: float-particle linear infinite;
+}
+
+/* ── GLOW ORBS ── */
+.glow-orb {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  z-index: 0;
+}
+
+/* ── PULSE RINGS ── */
+.pulse-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255,61,107,0.15);
+  animation: pulse-ring 2.5s ease-out infinite;
+}
+
+/* ── NAV ── */
+nav {
+  position: relative;
+  z-index: 10;
+  padding: 0 2.5rem;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  animation: fadeIn 0.5s ease both;
+  flex-shrink: 0;
+}
+
+.nav-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  letter-spacing: 4px;
+  background: linear-gradient(135deg, var(--accent), #0080ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-decoration: none;
+}
+
+.nav-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .75rem;
+  color: var(--muted);
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent2);
+  box-shadow: 0 0 8px var(--accent2);
+  animation: blink 1.2s ease infinite;
+  flex-shrink: 0;
+}
+
+/* ── MAIN CONTENT — flex:1 fills all remaining space ── */
+.error-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Pulse rings centered */
+.rings-wrap {
+  position: absolute;
+  top: 50%; left: 50%;
+  pointer-events: none;
+}
+
+.pulse-ring:nth-child(1) { width:300px; height:300px; margin:-150px; animation-delay:0s; }
+.pulse-ring:nth-child(2) { width:300px; height:300px; margin:-150px; animation-delay:0.8s; }
+.pulse-ring:nth-child(3) { width:300px; height:300px; margin:-150px; animation-delay:1.6s; }
+
+/* ── 404 GIANT TEXT ── */
+.error-code-wrap {
+  position: relative;
+  display: inline-block;
+  animation: fadeUp 0.7s var(--ease-out) 0.1s both;
+  line-height: 1;
+  margin-bottom: .5rem;
+}
+
+.error-code {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 6vw, 5rem);
+  letter-spacing: -4px;
+  background: linear-gradient(135deg, var(--text) 20%, var(--muted) 80%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  position: relative;
+  user-select: none;
+  animation: flicker 5s ease infinite;
+}
+
+/* Glitch layers */
+.error-code-wrap::before,
+.error-code-wrap::after {
+  content: attr(data-text);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2rem, 6vw, 5rem);
+  letter-spacing: -4px;
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+}
+
+.error-code-wrap::before {
+  -webkit-text-fill-color: var(--accent2);
+  opacity: 0.7;
+  animation: glitch1 4s ease-in-out 2s infinite;
+}
+
+.error-code-wrap::after {
+  -webkit-text-fill-color: var(--accent);
+  opacity: 0.5;
+  animation: glitch2 4s ease-in-out 2.3s infinite;
+}
+
+/* ── ERROR TERMINAL ── */
+.error-terminal {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.2rem 1.8rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .82rem;
+  text-align: left;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto 2rem;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.7s var(--ease-out) 0.3s both;
+}
+
+.error-terminal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent2), transparent);
+}
+
+.term-line {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  margin-bottom: .5rem;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.term-line:last-child { margin-bottom: 0; }
+
+.term-prefix {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.term-text { color: var(--muted); }
+.term-error { color: var(--accent2); }
+.term-warning { color: var(--gold); }
+.term-ok { color: var(--accent3); }
+
+.cursor {
+  display: inline-block;
+  width: 8px; height: 14px;
+  background: var(--accent);
+  vertical-align: middle;
+  margin-left: 4px;
+  animation: blink 1s ease infinite;
+  flex-shrink: 0;
+}
+
+/* ── ERROR MESSAGE ── */
+.error-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: 2px;
+  margin-bottom: .6rem;
+  animation: fadeUp 0.7s var(--ease-out) 0.2s both;
+}
+
+.error-desc {
+  color: var(--muted);
+  font-size: .95rem;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto 2.5rem;
+  font-weight: 300;
+  animation: fadeUp 0.7s var(--ease-out) 0.35s both;
+}
+
+/* ── ACTION BUTTONS ── */
+.error-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp 0.7s var(--ease-out) 0.45s both;
+}
+
+.btn-primary {
+  padding: 14px 30px;
+  background: var(--accent);
+  color: var(--bg);
+  border: none;
+  border-radius: 10px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary:hover {
+  background: #33eaff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0,229,255,0.35);
+}
+
+.btn-primary:active { transform: scale(0.97); }
+
+.btn-secondary {
+  padding: 14px 28px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.04);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  padding: 12px 22px;
+  background: rgba(255,61,107,0.08);
+  color: var(--accent2);
+  border: 1px solid rgba(255,61,107,0.2);
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: .88rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s var(--ease-out);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-ghost:hover {
+  background: rgba(255,61,107,0.15);
+  transform: translateY(-2px);
+}
+
+/* ── QUICK LINKS ── */
+.quick-links {
+  display: flex;
+  gap: .6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2.5rem;
+  animation: fadeUp 0.7s var(--ease-out) 0.55s both;
+}
+
+.quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: .78rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quick-link:hover {
+  color: var(--text);
+  border-color: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
+}
+
+.quick-link i { color: var(--accent); font-size: .72rem; }
+
+/* ── FOOTER — always sticks to bottom ── */
+.error-footer {
+  position: relative;
+  z-index: 10;
+  padding: 1.2rem 2.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  animation: fadeIn 0.8s ease 0.5s both;
+  opacity: 0;
+  flex-wrap: wrap;
+  gap: .8rem;
+}
+
+.footer-left {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .72rem;
+  color: var(--muted);
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.footer-right a {
+  font-size: .78rem;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-right a:hover { color: var(--text); }
+
+/* ── ERROR CODE BADGE ── */
+.error-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(255,61,107,0.08);
+  border: 1px solid rgba(255,61,107,0.2);
+  border-radius: 100px;
+  font-size: .75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent2);
+  margin-bottom: 1rem;
+  animation: fadeUp 0.6s var(--ease-out) 0.05s both;
+}
+
+.error-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent2);
+  animation: blink 1.2s ease infinite;
+  flex-shrink: 0;
+}
+
+/* ── DECORATIVE SPINNER ── */
+.deco-spinner {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  pointer-events: none;
+}
+
+.deco-spinner.s1 {
+  width: 60px; height: 60px;
+  border-top-color: rgba(0,229,255,0.2);
+  animation: spin-slow 4s linear infinite;
+}
+
+.deco-spinner.s2 {
+  width: 80px; height: 80px;
+  border-right-color: rgba(255,61,107,0.15);
+  animation: spin-slow 6s linear infinite reverse;
+}
+
+/* ════════════════════════════
+   RESPONSIVE — MOBILE
+   (mirrors index approach)
+════════════════════════════ */
+
+/* ── Tablet ── */
+@media (max-width: 768px) {
+  nav {
+    padding: 0 1.25rem;
+    height: 56px;
+  }
+
+  .nav-logo { font-size: 1.6rem; letter-spacing: 3px; }
+
+  .nav-status {
+    font-size: .7rem;
+    padding: 5px 10px;
+    gap: 6px;
+  }
+
+  .error-container {
+    padding: 2rem 1.25rem;
+    justify-content: center;
+  }
+
+  .error-terminal {
+    padding: 1rem 1.2rem;
+    font-size: .78rem;
+  }
+
+  .error-actions { gap: .75rem; }
+
+  .quick-links { margin-top: 1.8rem; gap: .5rem; }
+
+  .error-footer {
+    padding: 1rem 1.25rem;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .footer-right { justify-content: center; }
+}
+
+/* ── Mobile phones ── */
+@media (max-width: 480px) {
+  nav {
+    padding: 0 1rem;
+    height: 52px;
+  }
+
+  .nav-logo { font-size: 1.4rem; letter-spacing: 2px; }
+
+  .nav-status {
+    font-size: .65rem;
+    padding: 4px 8px;
+    gap: 5px;
+  }
+
+  /* Allow body to scroll on small phones so nothing gets cut off */
+  body { overflow-y: auto; }
+
+  .error-container {
+    padding: 1.5rem 1rem 2rem;
+    justify-content: flex-start;
+    padding-top: clamp(1.5rem, 6vw, 3rem);
+  }
+
+  .error-code {
+    font-size: clamp(5rem, 28vw, 7rem);
+    letter-spacing: -2px;
+  }
+
+  .error-code-wrap::before,
+  .error-code-wrap::after {
+    font-size: clamp(5rem, 28vw, 7rem);
+    letter-spacing: -2px;
+  }
+
+  .error-title { font-size: clamp(1.5rem, 6vw, 2rem); }
+
+  .error-desc {
+    font-size: .88rem;
+    margin-bottom: 1.8rem;
+  }
+
+  .error-terminal {
+    padding: .9rem 1rem;
+    font-size: .72rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+  }
+
+  .term-line { gap: .4rem; }
+
+  /* Stack buttons vertically on very small screens */
+  .error-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: .6rem;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-ghost {
+    justify-content: center;
+    padding: 13px 20px;
+    font-size: 1rem;
+  }
+
+  .quick-links {
+    margin-top: 1.5rem;
+    gap: .4rem;
+  }
+
+  .quick-link {
+    font-size: .72rem;
+    padding: 6px 11px;
+  }
+
+  .error-footer {
+    padding: .9rem 1rem;
+    flex-direction: column;
+    align-items: center;
+    gap: .5rem;
+    text-align: center;
+  }
+
+  .footer-left { font-size: .65rem; }
+  .footer-right { gap: 1rem; }
+  .footer-right a { font-size: .72rem; }
+
+  /* Hide decorative spinners on tiny screens to keep it clean */
+  .deco-spinner { display: none; }
+
+  /* Scale down pulse rings */
+  .pulse-ring:nth-child(1),
+  .pulse-ring:nth-child(2),
+  .pulse-ring:nth-child(3) {
+    width: 200px; height: 200px; margin: -100px;
+  }
+}
+
+/* ── Very small (360px) ── */
+@media (max-width: 360px) {
+  .nav-status span { display: none; }
+  .error-badge { font-size: .65rem; }
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+</style>
+</head>
+<body>
+
+<!-- Scanline effect -->
+<div class="scanline"></div>
+
+<!-- Floating particles -->
+<div class="particles" id="particles"></div>
+
+<!-- Glow orbs -->
+<div class="glow-orb" style="width:500px;height:500px;background:rgba(255,61,107,0.04);top:-10%;right:-10%"></div>
+<div class="glow-orb" style="width:600px;height:600px;background:rgba(0,229,255,0.03);bottom:-20%;left:-15%"></div>
+
+<!-- NAV -->
+<nav>
+<a href="https://fittech.space" style="text-decoration:none;">
+  <span class="nav-logo">FitTech</span>
+ <a>
+  <div class="nav-status">
+    <div class="status-dot"></div>
+    <span id="status-text">ERROR DETECTED</span>
+  </div>
+</nav>
+
+<!-- MAIN ERROR CONTENT -->
+<div class="error-container">
+
+  <!-- Pulse rings -->
+  <div class="rings-wrap">
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+    <div class="pulse-ring"></div>
+  </div>
+
+  <!-- Decorative spinners -->
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+    <div class="deco-spinner s1" style="position:relative;margin:0 auto"></div>
+  </div>
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)">
+    <div class="deco-spinner s2" style="position:relative;margin:0 auto"></div>
+  </div>
+
+  <!-- Error badge -->
+  <div class="error-badge">
+    <span class="dot"></span>
+    <span id="error-badge-text">HTTP — Not Found</span>
+  </div>
+
+  <!-- Glitch 404 -->
+  <div class="error-code-wrap" id="error-code-wrap" data-text="Page Not Found">
+    <div class="error-code" id="error-code-display">Page Not Found</div>
+  </div>
+
+  <!-- Terminal output -->
+  <div class="error-terminal">
+    <div class="term-line">
+      <span class="term-prefix">$</span>
+      <span class="term-text">fittech --request <span class="term-warning" id="term-path">unknown</span></span>
+    </div>
+    <div class="term-line">
+      <span class="term-prefix">!</span>
+      <span class="term-error" id="term-error">Error 404: Page not found</span>
+    </div>
+    <div class="term-line">
+      <span class="term-prefix">i</span>
+      <span class="term-text" id="term-suggestion">The requested resource could not be located on this server.</span>
+    </div>
+    <div class="term-line">
+      
+      <span class="cursor"></span>
+    </div>
+  </div>
+
+  <!-- Error title & description -->
+  <h1 class="error-title" id="error-title">Page Not Found</h1>
+  <p class="error-desc" id="error-desc">
+    The page you're looking for doesn't exist or may have been moved. 
+    Let's get you back to the right place.
+  </p>
+
+  <!-- Actions -->
+  <div class="error-actions">
+    <a href="https://fittech.space" class="btn-primary">
+      <i class="fa fa-home"></i> Back to App
+    </a>
+    <a href="https://fittech.space" class="btn-secondary">
+      <i class="fa fa-info-circle"></i> About FitTech
+    </a>
+    <a href="javascript:history.back()" class="btn-ghost">
+      <i class="fa fa-arrow-left"></i> Go Back
+    </a>
+  </div>
+
+  <!-- Quick navigation links -->
+  <div class="quick-links">
+    <a href="https://fittech.space" class="quick-link"><i class="fa fa-home"></i> Dashboard</a>
+    <a href="#view-workouts" class="quick-link"><i class="fa fa-dumbbell"></i> Workouts</a>
+    <a href="#view-schedule" class="quick-link"><i class="fa fa-calendar-alt"></i> Schedule</a>
+    <a href="#view-shop" class="quick-link"><i class="fa fa-store"></i> Shop</a>
+    <a href="#view-profile" class="quick-link"><i class="fa fa-user"></i> Profile</a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="error-footer">
+  <span class="footer-left">FitTech Gym Management System · CC-105 · NEUST CICT · 2026</span>
+  <div class="footer-right">
+    <a href="https://fittech.space">Landing Page</a>
+    <a href="https://fittech.space">Launch App</a>
+  </div>
+</footer>
+
+<script src="//code.tidio.co/czhprcfup7hnbyo14fplt87uqovyhlc1.js" async></script>
+
+<script>
+// ── GENERATE PARTICLES ──
+const particlesEl = document.getElementById('particles');
+const colors = ['rgba(0,229,255,0.6)', 'rgba(255,61,107,0.5)', 'rgba(124,255,107,0.4)', 'rgba(255,215,0,0.4)'];
+for (let i = 0; i < 20; i++) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = Math.random() * 3 + 1.5;
+  p.style.cssText = `
+    left: ${Math.random() * 100}%;
+    bottom: -10px;
+    width: ${size}px;
+    height: ${size}px;
+    background: ${colors[Math.floor(Math.random() * colors.length)]};
+    animation-duration: ${Math.random() * 12 + 8}s;
+    animation-delay: ${Math.random() * 10}s;
+    border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+  `;
+  particlesEl.appendChild(p);
+}
+
+// ── DYNAMIC ERROR CODE BASED ON URL PARAMS ──
+const params = new URLSearchParams(window.location.search);
+const code = params.get('code') || '404';
+
+const errorMap = {
+  '400': {
+    badge: 'HTTP 400 — Bad Request',
+    title: 'Bad Request',
+    desc: 'The server could not understand the request due to invalid syntax.',
+    terminal_error: 'Error 400: Malformed or invalid request syntax',
+    terminal_suggestion: 'Check your request parameters and try again.',
+    terminal_status: 'All services operational — request error only'
+  },
+  '401': {
+    badge: 'HTTP 401 — Unauthorized',
+    title: 'Access Denied',
+    desc: 'You need to be logged in to access this resource. Please sign in first.',
+    terminal_error: 'Error 401: Authentication credentials not found',
+    terminal_suggestion: 'Log in to your FitTech account to proceed.',
+    terminal_status: 'Auth service running — session expired or missing'
+  },
+  '403': {
+    badge: 'HTTP 403 — Forbidden',
+    title: 'Forbidden',
+    desc: 'You don\'t have permission to access this area. Admins only beyond this point.',
+    terminal_error: 'Error 403: Insufficient permissions — admin access required',
+    terminal_suggestion: 'Contact an administrator if you believe this is an error.',
+    terminal_status: 'RBAC enforcement active — access correctly blocked'
+  },
+  '404': {
+    badge: 'HTTP 404 — Not Found',
+    title: '',
+    desc: 'The page you\'re looking for doesn\'t exist or may have been moved.',
+    terminal_error: 'Error 404: Requested resource not located on server',
+    terminal_suggestion: 'The requested resource could not be found. Check the URL and try again.',
+    terminal_status: 'All other services running normally'
+  },
+  '500': {
+    badge: 'HTTP 500 — Internal Server Error',
+    title: 'Server Error',
+    desc: 'Something went wrong on our end. This is likely a PHP or database issue.',
+    terminal_error: 'Error 500: Internal server error — PHP/MySQL exception',
+    terminal_suggestion: 'Check XAMPP error logs. Ensure MySQL is running and the database is set up.',
+    terminal_status: 'Server exception caught — check error logs'
+  },
+  '503': {
+    badge: 'HTTP 503 — Service Unavailable',
+    title: 'Service Unavailable',
+    desc: 'The server is temporarily unavailable. This usually means XAMPP isn\'t running.',
+    terminal_error: 'Error 503: Server unavailable — service not responding',
+    terminal_suggestion: 'Start Apache and MySQL in XAMPP Control Panel.',
+    terminal_status: 'Server offline — start XAMPP to restore service'
+  }
+};
+
+const errData = errorMap[code] || errorMap['404'];
+
+// Apply dynamic content
+document.getElementById('error-code-display').textContent = 'PAGE NOT FOUND';
+document.getElementById('error-code-wrap').dataset.text = 'PAGE NOT FOUND';
+document.getElementById('error-badge-text').textContent = errData.badge;
+document.getElementById('error-title').textContent = errData.title;
+document.getElementById('error-desc').textContent = errData.desc;
+document.getElementById('term-path').textContent = window.location.pathname || '/unknown';
+document.getElementById('term-error').textContent = errData.terminal_error;
+document.getElementById('term-suggestion').textContent = errData.terminal_suggestion;
+document.getElementById('term-status').textContent = errData.terminal_status;
+document.getElementById('status-text').textContent = `HTTP ${code} — ${errData.title.toUpperCase()}`;
+
+// Color adjustments for non-404 codes
+if (['500','503'].includes(code)) {
+  document.documentElement.style.setProperty('--accent', '#ffd700');
+  document.getElementById('error-badge-text').style.color = '#ffd700';
+} else if (['401','403'].includes(code)) {
+  document.getElementById('term-status').style.color = '#ffd700';
+}
+
+// ── ANIMATED TYPING for terminal last line ──
+const termStatus = document.getElementById('term-status');
+const fullText = termStatus.textContent;
+termStatus.textContent = '';
+
+setTimeout(() => {
+  let i = 0;
+  const type = () => {
+    if (i < fullText.length) {
+      termStatus.textContent += fullText[i++];
+      setTimeout(type, Math.random() * 40 + 20);
+    }
+  };
+  type();
+}, 1200);
+</script>
+
+</body>
+</html>
